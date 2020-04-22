@@ -48,7 +48,7 @@
 
 - name: Check if grafana dashboard for statsd already exists
   uri:
-    url: "http://{{ grafana_public_dns }}:3000/api/dashboards/uid/{{ grafana.dashboard_uid }}"
+    url: "http://{{ grafana_public_dns }}:3000/api/dashboards/uid/{{ dashboard_uid }}"
     user: admin
     password: admin
     method: GET
