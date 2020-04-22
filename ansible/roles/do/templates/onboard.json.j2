@@ -1,0 +1,36 @@
+{
+  "schemaVersion": "1.12.0",
+  "class": "Device",
+  "async": true,
+  "label": "Onboard BIG-IP",
+  "Common": {
+    "class": "Tenant",
+    "myDns": {
+      "class": "DNS",
+      "nameServers": [
+        "1.1.1.1",
+        "4.4.4.4",
+        "8.8.8.8"
+      ],
+      "search": [
+        "f5demo.eu"
+      ]
+    },
+    "myNtp": {
+      "class": "NTP",
+      "servers": [
+        "0.pool.ntp.org",
+        "1.pool.ntp.org",
+        "2.pool.ntp.org"
+      ],
+      "timezone": "UTC"
+    },
+    "myProvisioning": {
+      "class": "Provision",
+      "asm": "nominal",
+      "avr": "nominal",
+      "gtm": "nominal",
+      "ltm": "nominal"
+    }
+  }
+}

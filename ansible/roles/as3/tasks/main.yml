@@ -1,0 +1,56 @@
+---
+- name: Set connection provider for BIG-IP tasks
+  set_fact:
+    provider:
+      server: "{{ public_dns_name }}"
+      server_port: 8443
+      user: "{{ bigip.admin_user }}"
+      password: "{{ bigip.admin_password }}"
+      validate_certs: false 
+
+- name: Wait for BIG-IP to be ready to take configuration
+  bigip_wait:
+    timeout: 600
+    sleep: 5
+    provider: "{{ provider }}"
+
+- name: Process AS3 jinja template and store result in output folder
+  template:
+    src: "templates/{{ webservers[item].as3_template }}.json.j2"
+    dest: "{{ outputfolder }}/as3_{{ item }}_{{ webservers[item].as3_template }}.json"
+    mode: 0644
+  with_items: "{{ webservers }}"   
+
+- name: Perform AS3 deployment
+  include_role:
+    name: f5devcentral.atc_deploy
+  vars:
+    atc_method: POST
+    atc_declaration_file: "{{ outputfolder }}/as3_{{ item }}_{{ webservers[item].as3_template }}.json"
+    atc_delay: 10
+    atc_retries: 20
+  with_items: "{{ webservers }}"
+
+- name: Verify AS3 deployment
+  include_role:
+    name: f5devcentral.atc_deploy
+  vars:
+    atc_method: GET
+    atc_delay: 10
+    atc_retries: 20
+
+- name: Store result of AS3 deployment in output folder
+  copy:
+    content: |
+      {{ (atc_GET_status.json is defined) | ternary(atc_GET_status.json | to_nice_json(indent=2), atc_GET_status.content) }}
+    dest: "{{ outputfolder }}/as3_total_result.json"
+
+- name: Final result verification on BIG-IP 
+  debug:
+    msg: >
+      Verify on BIG-IP if your desired results was achieved
+        > Admin UI : https://{{ public_dns_name }}:8443
+        > REST URI : https://{{ public_dns_name }}:8443/mgmt/shared/appsvcs/declare
+        > DOCS URL   : https://clouddocs.f5.com/products/extensions/f5-appsvcs-extension/latest
+        > SCHEMA REF : https://clouddocs.f5.com/products/extensions/f5-appsvcs-extension/latest/refguide/schema-reference.html
+        > GITHUB SRC : https://github.com/F5Networks/f5-appsvcs-extension

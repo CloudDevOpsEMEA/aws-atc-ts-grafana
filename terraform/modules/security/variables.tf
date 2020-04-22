@@ -24,3 +24,15 @@ variable "vpc_id" {
   description = "The id of the vpc"
   type        = string
 }
+
+variable "vs_from_port" {
+  description = "The id of the vpc"
+  type        = number
+  default     = 8080
+}
+
+variable "vs_to_port" {
+  description = "The id of the vpc"
+  type        = string
+  default     = 8090
+}

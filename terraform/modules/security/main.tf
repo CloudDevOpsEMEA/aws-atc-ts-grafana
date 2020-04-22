@@ -70,8 +70,8 @@ module "bigip_vip_range_sg" {
   ]
   ingress_with_cidr_blocks = [
     {
-      from_port   = 8080
-      to_port     = 8099
+      from_port   = var.vs_from_port
+      to_port     = var.vs_to_port
       protocol    = "tcp"
       description = "BIG-IP virtual server ports"
       cidr_blocks = "0.0.0.0/0"

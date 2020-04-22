@@ -1,0 +1,28 @@
+{
+  "class": "Telemetry",
+  "MyTelemetrySystem": {
+      "class": "Telemetry_System",
+      "allowSelfSignedCert": true,
+      "systemPoller": {
+          "interval": 60
+      }
+  },    
+  "GraphiteConsumer": {
+      "class": "Telemetry_Consumer",
+      "type": "Graphite",
+      "host": "{{ graphite_private_ip }}",
+      "protocol": "http",
+      "port": 80
+  },
+  "StatsdConsumer": {
+    "class": "Telemetry_Consumer",
+    "type": "Statsd",
+    "host":"{{ statsd_private_ip }}",
+    "protocol": "udp",
+    "port": 8125
+  },
+  "MyTelemetryListener": {
+      "class": "Telemetry_Listener",
+      "port": 6514
+  }
+}

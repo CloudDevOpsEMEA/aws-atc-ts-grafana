@@ -1,0 +1,73 @@
+---
+- name:  Get the private and public ip of the host running graphite/grafana/statsd
+  set_fact:
+    graphite_private_ip: "{{ groups[group_name] | map('extract', hostvars, 'private_ip_address') | list | first }}"
+    grafana_public_dns: "{{ groups[group_name] | map('extract', hostvars, 'public_dns_name') | list | first }}"
+    graphite_public_dns: "{{ groups[group_name] | map('extract', hostvars, 'public_dns_name') | list | first }}"
+    statsd_public_dns: "{{ groups[group_name] | map('extract', hostvars, 'public_dns_name') | list | first }}"
+  vars:
+    group_name: "tag_Role_graphite_grafana"
+
+- name: Process Grafana Datasource for Graphite jinja template and store result in output folder
+  template:
+    src: templates/datasource_graphite.json.j2
+    dest: "{{ outputfolder }}/grafana_datasource_graphite.json"
+    mode: 0644
+
+- name: Check of graphite datasource for grafana already exists
+  uri:
+    url: "http://{{ grafana_public_dns }}:3000/api/datasources"
+    user: admin
+    password: admin
+    method: GET
+    force_basic_auth: yes
+    status_code: 200
+  register: get_result
+  until: get_result.status == 200
+  retries: 30
+  delay: 10
+
+- name: Add graphite datasource into grafana
+  uri:
+    url: "http://{{ grafana_public_dns }}:3000/api/datasources"
+    user: admin
+    password: admin
+    method: POST
+    body: "{{ lookup('file','{{ outputfolder }}/grafana_datasource_graphite.json') }}"
+    force_basic_auth: yes
+    status_code: 200
+    body_format: json
+  register: post_result
+  until: post_result.status == 200
+  retries: 30
+  delay: 10
+  when: >
+    (get_result.json is defined and get_result.json | length == 0) or get_result.json is undefined
+
+- name: Add graphite statsd dashboard into grafana
+  uri:
+    url: "http://{{ grafana_public_dns }}:3000/api/dashboards/db"
+    user: admin
+    password: admin
+    method: POST
+    body: >
+      {
+        "dashboard": {{ lookup('file','files/statsd_dashboard.json') }},
+        "folderId": 0,
+        "overwrite": false
+      }
+    force_basic_auth: yes
+    status_code: 200
+    body_format: json
+  register: post_result
+  until: post_result.status == 200
+  retries: 30
+  delay: 10
+
+- name: Print the URLs for Grafana / Graphite / Statsd
+  debug:
+    msg: >
+      Verify if metrics and/or events are arriving at the following admin UIs
+        > Grafana UI   : http://{{ grafana_public_dns }}:3000
+        > Graphite UI  : http://{{ graphite_public_dns }}:80
+        > StatsD Admin : echo "gauges" | nc {{ statsd_public_dns }} 8126

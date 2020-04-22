@@ -1,0 +1,25 @@
+{
+    "files.associations": {
+        "*.json.jinja": "json",
+        "*.json.jinja2": "json",
+        "*.json.j2": "json",
+        "*.json.tpl": "json",
+        "*.yaml.jinja": "yaml",
+        "*.yaml.jinja2": "yaml",
+        "*.yaml.j2": "yaml",
+        "*.yaml.tpl": "yaml",
+        "*.yml.jinja": "yaml",
+        "*.yml.jinja2": "yaml",
+        "*.yml.j2": "yaml",
+        "*.yml.tpl": "yaml",
+        "*.sh.jinja": "shellscript",
+        "*.sh.jinja2": "shellscript",
+        "*.sh.j2": "shellscript",
+        "*.sh.tpl": "shellscript"
+    },
+    "editor": {
+        "tabSize": 2,
+        "insertSpaces": true,
+        "detectIndentation": false
+    }
+}

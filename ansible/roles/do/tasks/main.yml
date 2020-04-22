@@ -1,0 +1,46 @@
+---
+- name: Set connection provider for BIG-IP tasks
+  set_fact:
+    provider:
+      server: "{{ public_dns_name }}"
+      server_port: 8443
+      user: "{{ bigip.admin_user }}"
+      password: "{{ bigip.admin_password }}"
+      validate_certs: false
+
+- name: Wait for BIG-IP to be ready to take configuration
+  bigip_wait:
+    timeout: 600
+    sleep: 10
+    provider: "{{ provider }}"
+
+- name: Process DO jinja template and store result in output folder
+  template:
+    src: "templates/onboard.json.j2"
+    dest: "{{ outputfolder }}/do_onboard.json"
+    mode: 0644
+
+- name: Perform DO for initial device onboarding
+  include_role:
+    name: f5devcentral.atc_deploy
+  vars:
+    atc_method: POST
+    atc_declaration_file: "{{ outputfolder }}/do_onboard.json"
+    atc_delay: 10
+    atc_retries: 90
+
+- name: Store result of DO onboarding in output folder
+  copy:
+    content: |
+      {{ (atc_DO_result.json is defined) | ternary(atc_DO_result.json | to_nice_json(indent=2), atc_DO_result.content) }}
+    dest: "{{ outputfolder }}/do_onboard_result.json"
+
+- name: Final result verification of DO onboarding 
+  debug:
+    msg: >
+        Verify on BIG-IP if your desired results was achieved
+        > Admin UI   : https://{{ public_dns_name }}:8443
+        > REST URI   : https://{{ public_dns_name }}:8443/mgmt/shared/declarative-onboarding
+        > DOCS URL   : https://clouddocs.f5.com/products/extensions/f5-declarative-onboarding/latest
+        > SCHEMA REF : https://clouddocs.f5.com/products/extensions/f5-declarative-onboarding/latest/schema-reference.html
+        > GITHUB SRC : https://github.com/F5Networks/f5-declarative-onboarding

@@ -1,0 +1,63 @@
+{
+  "class": "AS3",
+  "action": "deploy",
+  "declaration": {
+    "class": "ADC",
+    "schemaVersion": "3.19.0",
+    "id": "DemoWebServers",
+    "label": "DemoWebServers",
+    "remark": "DemoWebServers",
+    "{{ webservers[item].tenant }}": {
+      "class": "Tenant",
+      "{{ webservers[item].application }}": {
+        "class": "Application",
+        "template": "generic",
+        "WebServerVIP": {
+          "class": "Service_HTTPS",
+          "virtualAddresses": ["{{ network_interfaces[0].private_ip_addresses[webservers[item].private_ip_index].private_ip_address }}"],
+          "virtualPort": {{ webservers[item].vs_port }},
+          "snat": "auto",
+          "pool": "WebServerPoolHttps",
+          "profileHTTP": "basic",
+          "serverTLS": "WebTLS"
+        },
+        "WebServerPoolHttps": {
+          "class": "Pool",
+          "monitors": ["http"],
+          "reselectTries": 100,
+          "members": [
+            {
+              "servicePort": 80,
+              "addressDiscovery": "aws",
+              "updateInterval": 30,
+              "tagKey": "Autodiscovery",
+              "tagValue": "{{ webservers[item].autodiscovery_tag }}",
+              "addressRealm": "private",
+              "accessKeyId": "{{ aws.access_key_id }}",
+              "secretAccessKey": "{{ aws.secret_access_key }}",
+              "region": "{{ aws.region }}",
+              "credentialUpdate": true
+            }
+          ]
+        },
+        "WebTLS": {
+          "class": "TLS_Server",
+          "certificates": [
+            {
+              "certificate": "WebCert"
+            }
+          ]
+        },
+        "WebCert": {
+          "class": "Certificate",
+          "certificate": {
+            "bigip": "/Common/default.crt"
+          },
+          "privateKey": {
+            "bigip": "/Common/default.key"
+          }
+        }
+      }
+    }
+  }
+}

@@ -66,6 +66,8 @@ module security {
   random_id            = random_id.id.hex
   bigip_admin_password = local.setup.bigip.admin_password
   vpc_id               = module.network.vpc_id
+  vs_from_port         = local.setup.aws.vs_from_port
+  vs_to_port           = local.setup.aws.vs_to_port
 }
 
 #
@@ -80,6 +82,7 @@ module bigip {
 
   ec2_key_name       = module.security.ec2_key_name
   bigip_pw_secret_id = module.security.bigip_pw_secret_id
+  ec2_instance_type  = local.setup.bigip.ec2_instance_type
 
   do_version  = local.setup.bigip.do_version
   as3_version = local.setup.bigip.as3_version

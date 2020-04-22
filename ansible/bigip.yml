@@ -1,0 +1,10 @@
+---
+- name: Declarative Onboarding (DO) playbook
+  hosts: tag_Role_bigip
+  connection: local
+  vars_files: "{{ setupfile }}"
+  roles:
+    - do
+    - as3
+    - ts
+

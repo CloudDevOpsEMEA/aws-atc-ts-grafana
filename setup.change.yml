@@ -16,7 +16,8 @@ aws:
 bigip:
   admin_user: admin
   admin_password: "F5devops2020!"
-  ami_search_name: "F5 BIGIP-15.* PAYG-Best 10Gbps*"
+  ec2_instance_type: m5.large
+  ami_search_name: "F5 BIGIP-15.* PAYG-Best 200Mbps*"
   extra_private_ips: 2
   do_version: v1.12.0
   as3_version: v3.19.0

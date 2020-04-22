@@ -1,0 +1,13 @@
+{
+    "name": "Graphite Datasource",
+    "type": "graphite",
+    "access": "proxy",
+    "url": "http://{{ graphite_private_ip }}:80",
+    "basicAuth": false,
+    "isDefault": true,
+    "jsonData": {
+        "graphiteType": "default",
+        "tlsSkipVerify": true
+    },
+    "readOnly": false
+}
