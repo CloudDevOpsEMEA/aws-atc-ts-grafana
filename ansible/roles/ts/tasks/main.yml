@@ -24,7 +24,7 @@
 - name: Process jinja template and store result for artifact storage (graphite json blob for TS)
   template:
     src: templates/graphite_statsd.json.j2
-    dest: "{{ outputfolder }}/graphite_statsd.json"
+    dest: "{{ outputfolder }}/ts_graphite_statsd.json"
     mode: 0644
 
 - name: Perform TS registration
@@ -32,7 +32,7 @@
     name: f5devcentral.atc_deploy
   vars:
     atc_method: POST
-    atc_declaration_file: "{{ outputfolder }}/graphite_statsd.json"
+    atc_declaration_file: "{{ outputfolder }}/ts_graphite_statsd.json"
     atc_delay: 10
     atc_retries: 20
 

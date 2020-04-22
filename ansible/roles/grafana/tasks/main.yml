@@ -8,24 +8,22 @@
   vars:
     group_name: "tag_Role_graphite_grafana"
 
-- name: Process Grafana Datasource for Graphite jinja template and store result in output folder
+
+  ### Create Graphite datasource for Grafana metricss ###
+- name: Process grafana datasource for graphite jinja template and store result in output folder
   template:
     src: templates/datasource_graphite.json.j2
     dest: "{{ outputfolder }}/grafana_datasource_graphite.json"
     mode: 0644
 
-- name: Check of graphite datasource for grafana already exists
+- name: Check of grafana datasource for graphite already exists
   uri:
     url: "http://{{ grafana_public_dns }}:3000/api/datasources"
     user: admin
     password: admin
     method: GET
     force_basic_auth: yes
-    status_code: 200
-  register: get_result
-  until: get_result.status == 200
-  retries: 30
-  delay: 10
+  register: get_result_datasource
 
 - name: Add graphite datasource into grafana
   uri:
@@ -37,13 +35,27 @@
     force_basic_auth: yes
     status_code: 200
     body_format: json
-  register: post_result
-  until: post_result.status == 200
-  retries: 30
-  delay: 10
   when: >
-    (get_result.json is defined and get_result.json | length == 0) or get_result.json is undefined
+    (get_result_datasource.json is defined and get_result_datasource.json | length == 0) or get_result_datasource.json is undefined
 
+
+### Create Grafana dashboard for StatsD metricss ###
+- name: Process grafana dashboard for statsd jinja template and store result in output folder
+  template:
+    src: templates/statsd_dashboard.json.j2
+    dest: "{{ outputfolder }}/grafana_statsd_dashboard.json"
+    mode: 0644
+
+- name: Check if grafana dashboard for statsd already exists
+  uri:
+    url: "http://{{ grafana_public_dns }}:3000/api/dashboards/uid/{{ grafana.dashboard_uid }}"
+    user: admin
+    password: admin
+    method: GET
+    force_basic_auth: yes
+  register: get_result_dashboard
+  failed_when: false
+    
 - name: Add graphite statsd dashboard into grafana
   uri:
     url: "http://{{ grafana_public_dns }}:3000/api/dashboards/db"
@@ -52,18 +64,15 @@
     method: POST
     body: >
       {
-        "dashboard": {{ lookup('file','files/statsd_dashboard.json') }},
+        "dashboard": {{ lookup('file','{{ outputfolder }}/grafana_statsd_dashboard.json') }},
         "folderId": 0,
-        "overwrite": false
+        "overwrite": true
       }
     force_basic_auth: yes
     status_code: 200
     body_format: json
-  register: post_result
-  until: post_result.status == 200
-  retries: 30
-  delay: 10
-
+  when: get_result_dashboard.status == 404
+  
 - name: Print the URLs for Grafana / Graphite / Statsd
   debug:
     msg: >
