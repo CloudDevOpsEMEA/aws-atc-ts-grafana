@@ -1,0 +1,44 @@
+---
+## Your personal variables
+owner: changeme
+
+## AWS variables
+aws:
+  access_key_id: changeme
+  secret_access_key: changeme
+  region: eu-west-1
+  availability_zone: eu-west-1a
+  environment: grafana-demo
+  vs_from_port: 8080
+  vs_to_port: 8090
+
+## BIG-IP variables
+bigip:
+  admin_user: admin
+  admin_password: "F5devops2020!"
+  ami_search_name: "F5 BIGIP-15.* PAYG-Best 10Gbps*"
+  extra_private_ips: 2
+  do_version: v1.12.0
+  as3_version: v3.19.0
+  ts_version: v1.11.0
+
+## Nginx Webserver variables
+webservers:
+  nginx:
+    count: 3
+    vs_port: 8080
+    tenant: Team_Nginx
+    application: NginxWebServer
+    autodiscovery_tag: nginx
+    as3_template: http
+    private_ip_index: 1
+    docker_command: docker run -d -p 80:80 --net host -e F5DEMO_APP=website -e F5DEMO_NODENAME=NginxWebserver --restart always --name f5demoapp f5devcentral/f5-demo-httpd:nginx
+  broken:
+    count: 3
+    vs_port: 8080
+    tenant: Team_Broken
+    application: BrokenWebServer
+    autodiscovery_tag: broken
+    as3_template: ssl
+    private_ip_index: 2
+    docker_command: docker run --name restserver -p 80:8000 boeboe/demo-rest-server
