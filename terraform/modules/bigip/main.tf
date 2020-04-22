@@ -55,8 +55,9 @@ data "aws_ami" "f5_ami" {
 # Create Network Interfaces
 #
 resource "aws_network_interface" "bigip_interface" {
-  subnet_id       = var.vpc_subnet_id
-  security_groups = var.subnet_security_group_ids
+  subnet_id         = var.vpc_subnet_id
+  security_groups   = var.subnet_security_group_ids
+  private_ips_count = var.extra_private_ips
 
   tags = {
     Name        = format("%s-mgmt-intf-%s", var.owner, var.random_id)
@@ -66,12 +67,19 @@ resource "aws_network_interface" "bigip_interface" {
   }
 }
 
+data "aws_network_interface" "bigip_interface" {
+  id = aws_network_interface.bigip_interface.id
+}
+
 #
 # add an elastic IP to the BIG-IP management interface
 #
 resource "aws_eip" "bigip_eip" {
-  network_interface = aws_network_interface.bigip_interface.id
-  vpc               = true
+  count = 1 + var.extra_private_ips
+
+  network_interface         = aws_network_interface.bigip_interface.id
+  vpc                       = true
+  associate_with_private_ip = sort(aws_network_interface.bigip_interface.private_ips)[count.index]
 
   tags = {
     Name        = format("%s-mgmt-eip-%s", var.owner, var.random_id)

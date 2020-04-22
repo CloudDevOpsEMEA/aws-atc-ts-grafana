@@ -93,6 +93,7 @@ module bigip {
 
   vpc_subnet_id      = module.network.vpc_subnet_id
   f5_ami_search_name = local.setup.bigip.ami_search_name
+  extra_private_ips  = local.setup.bigip.extra_private_ips
 }
 
 #
@@ -187,7 +188,7 @@ resource "local_file" "ansible_dynamic_inventory_config" {
 data "template_file" "generate_load_script" {
   template = file("${path.module}/templates/generate_load.sh.tpl")
   vars = {
-    bigip_address = module.bigip.bigip_public_dns
+    bigip_address = module.bigip.bigip_public_dns[0]
   }
 }
 

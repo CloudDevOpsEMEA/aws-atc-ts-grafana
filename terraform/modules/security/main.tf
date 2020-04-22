@@ -59,6 +59,15 @@ module "bigip_vip_range_sg" {
   description = "Security group for BIG-IP virtual server ports"
   vpc_id      = var.vpc_id
 
+  egress_cidr_blocks      = ["0.0.0.0/0"]
+  egress_ipv6_cidr_blocks = ["::/0"]
+  egress_rules            = ["all-all"]
+
+  ingress_with_self = [
+    {
+      rule = "all-all"
+    }
+  ]
   ingress_with_cidr_blocks = [
     {
       from_port   = 8080

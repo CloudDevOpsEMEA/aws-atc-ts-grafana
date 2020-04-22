@@ -21,6 +21,12 @@ variable "f5_ami_search_name" {
   default     = "F5 Networks BIGIP-14.* PAYG - Best 200Mbps*"
 }
 
+variable "extra_private_ips" {
+  description = "Extra private IP addresses to be assigned"
+  type        = number
+  default     = 2
+}
+
 variable "f5_instance_count" {
   description = "Number of BIG-IPs to deploy"
   type        = number
