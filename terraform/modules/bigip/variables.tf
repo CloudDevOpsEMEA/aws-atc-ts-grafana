@@ -87,6 +87,11 @@ variable "ts_version" {
   type        = string
 }
 
+variable "cfe_version" {
+  description = "The version for F5 ATC Cloud Failover Extension (CFE)"
+  type        = string
+}
+
 variable "libs_dir" {
   description = "Directory on the BIG-IP to download the A&O Toolchain into"
   type        = string

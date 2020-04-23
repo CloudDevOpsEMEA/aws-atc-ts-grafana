@@ -1,12 +1,13 @@
 {
   "class": "AS3",
   "action": "deploy",
+  "persist": true,
   "declaration": {
     "class": "ADC",
     "schemaVersion": "3.19.0",
-    "id": "DemoWebServers",
-    "label": "DemoWebServers",
-    "remark": "DemoWebServers",
+    "id": "AS3_Declaration",
+    "label": "AS3_Declaration",
+    "remark": "AS3_Declaration",
     "{{ webservers[item].tenant }}": {
       "class": "Tenant",
       "{{ webservers[item].application }}": {

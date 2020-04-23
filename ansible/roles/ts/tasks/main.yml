@@ -1,53 +1,58 @@
 ---
-- name: Set connection provider for BIG-IP tasks
-  set_fact:
-    provider:
-      server: "{{ public_dns_name }}"
-      server_port: 8443
-      user: "{{ bigip.admin_user }}"
-      password: "{{ bigip.admin_password }}"
-      validate_certs: false
+- name: Telemetry Streaming (TS) Role
+  block:
 
-- name: Wait for BIG-IP to be ready to take configuration
-  bigip_wait:
-    timeout: 600
-    sleep: 5
-    provider: "{{ provider }}"
+    - name: Set connection provider for BIG-IP tasks
+      set_fact:
+        provider:
+          server: "{{ public_dns_name }}"
+          server_port: 8443
+          user: "{{ bigip.admin_user }}"
+          password: "{{ bigip.admin_password }}"
+          validate_certs: false
 
-- name:  Get the private and public ip of the host running graphite/grafana/statsd
-  set_fact:
-    graphite_private_ip: "{{ groups[group_name] | map('extract', hostvars, 'private_ip_address') | list | first }}"
-    statsd_private_ip: "{{ groups[group_name] | map('extract', hostvars, 'private_ip_address') | list | first }}"
-  vars:
-    group_name: "tag_Role_graphite_grafana"
+    - name: Wait for BIG-IP to be ready to take configuration
+      bigip_wait:
+        timeout: 600
+        sleep: 5
+        provider: "{{ provider }}"
 
-- name: Process jinja template and store result for artifact storage (graphite json blob for TS)
-  template:
-    src: templates/graphite_statsd.json.j2
-    dest: "{{ outputfolder }}/ts_graphite_statsd.json"
-    mode: 0644
+    - name:  Get the private and public ip of the host running graphite/grafana/statsd
+      set_fact:
+        graphite_private_ip: "{{ groups[group_name] | map('extract', hostvars, 'private_ip_address') | list | first }}"
+        statsd_private_ip: "{{ groups[group_name] | map('extract', hostvars, 'private_ip_address') | list | first }}"
+      vars:
+        group_name: "tag_Role_graphite_grafana"
 
-- name: Perform TS registration
-  include_role:
-    name: f5devcentral.atc_deploy
-  vars:
-    atc_method: POST
-    atc_declaration_file: "{{ outputfolder }}/ts_graphite_statsd.json"
-    atc_delay: 10
-    atc_retries: 20
+    - name: Process jinja template and store result for artifact storage (graphite json blob for TS)
+      template:
+        src: templates/graphite_statsd.json.j2
+        dest: "{{ outputfolder }}/ts_graphite_statsd.json"
+        mode: 0644    
 
-- name: Store result of TS registration for artifact storage (graphite json blob for TS)
-  copy:
-    content: |
-      {{ (atc_TS_status.json is defined) | ternary(atc_TS_status.json | to_nice_json(indent=2), atc_TS_status.content) }}
-    dest: "{{ outputfolder }}/ts_graphite_statsd_result.json"
+    - name: Perform TS registration
+      include_role:
+        name: f5devcentral.atc_deploy
+      vars:
+        atc_method: POST
+        atc_declaration_file: "{{ outputfolder }}/ts_graphite_statsd.json"
+        atc_delay: 10
+        atc_retries: 20
+        atc_service: Telemetry
 
-- name: Final result verification on BIG-IP 
-  debug:
-    msg: >
-      Verify on BIG-IP if your desired results was achieved
-        > Admin UI   : https://{{ public_dns_name }}:8443
-        > REST URI   : https://{{ public_dns_name }}:8443/mgmt/shared/telemetry/declare
-        > DOCS URL   : https://clouddocs.f5.com/products/extensions/f5-telemetry-streaming/latest
-        > SCHEMA REF : https://clouddocs.f5.com/products/extensions/f5-telemetry-streaming/latest/schema-reference.html
-        > GITHUB SRC : https://github.com/F5Networks/f5-telemetry-streaming
+    - name: Store result of TS registration for artifact storage (graphite json blob for TS)
+      copy:
+        content: |
+          {{ (atc_TS_status.json is defined) | ternary(atc_TS_status.json | to_nice_json(indent=2), atc_TS_status.content) }}
+        dest: "{{ outputfolder }}/ts_graphite_statsd_result.json"
+
+  always:
+    - name: TS final result verification on BIG-IP 
+      debug:
+        msg: |
+          Verify on BIG-IP if your desired results was achieved
+            > Admin UI   : https://{{ public_dns_name }}:8443
+            > REST URI   : https://{{ public_dns_name }}:8443/mgmt/shared/telemetry/declare
+            > DOCS URL   : https://clouddocs.f5.com/products/extensions/f5-telemetry-streaming/latest
+            > SCHEMA REF : https://clouddocs.f5.com/products/extensions/f5-telemetry-streaming/latest/schema-reference.html
+            > GITHUB SRC : https://github.com/F5Networks/f5-telemetry-streaming

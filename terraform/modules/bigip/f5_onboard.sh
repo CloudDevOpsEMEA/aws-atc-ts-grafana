@@ -201,41 +201,36 @@ fi
 # Could be pre-packaged or hosted internally
 mkdir -p ${libs_dir}
 
-DO_URL='${DO_URL}'
-DO_FN=$(basename "$DO_URL")
-AS3_URL='${AS3_URL}'
-AS3_FN=$(basename "$AS3_URL")
-TS_URL='${TS_URL}'
-TS_FN=$(basename "$TS_URL")
-
-echo -e "\n"$(date) "Download Declarative Onboarding Pkg"
-curl -L -o ${libs_dir}/$DO_FN $DO_URL
-sleep 20
-
-echo -e "\n"$(date) "Download AS3 Pkg"
-curl -L -o ${libs_dir}/$AS3_FN $AS3_URL
-sleep 20
-
-echo -e "\n"$(date) "Download TS Pkg"
-curl -L -o ${libs_dir}/$TS_FN $TS_URL
-sleep 20
+# Download ATC download helper script and do the actual RPM downloads
+echo "DOWNLOAD ATC COMPONENTS"
+curl -o /config/cloud/download_atc_rpm.sh -s --fail --retry 60 -m 10 -L https://raw.githubusercontent.com/CloudDevOpsEMEA/download-f5-atc-rpm/master/download_atc_rpm.sh
+chmod +x /config/cloud/download_atc_rpm.sh
+. /config/cloud/download_atc_rpm.sh do ${DO_VERSION} ${libs_dir}/do.rpm
+. /config/cloud/download_atc_rpm.sh as3 ${AS3_VERSION} ${libs_dir}/as3.rpm
+. /config/cloud/download_atc_rpm.sh ts ${TS_VERSION} ${libs_dir}/ts.rpm
+. /config/cloud/download_atc_rpm.sh cfe ${CFE_VERSION} ${libs_dir}/cfe.rpm
 
 # Copy the RPM Pkg to the file location
 cp ${libs_dir}/*.rpm /var/config/rest/downloads/
 
 # Install Declarative Onboarding Pkg
-DATA="{\"operation\":\"INSTALL\",\"packageFilePath\":\"/var/config/rest/downloads/$DO_FN\"}"
+DATA="{\"operation\":\"INSTALL\",\"packageFilePath\":\"/var/config/rest/downloads/do.rpm\"}"
 echo -e "\n"$(date) "Install DO Pkg"
 restcurl -X POST "shared/iapp/package-management-tasks" -d $DATA
 
 # Install AS3 Pkg
-DATA="{\"operation\":\"INSTALL\",\"packageFilePath\":\"/var/config/rest/downloads/$AS3_FN\"}"
+DATA="{\"operation\":\"INSTALL\",\"packageFilePath\":\"/var/config/rest/downloads/as3.rpm\"}"
 echo -e "\n"$(date) "Install AS3 Pkg"
 restcurl -X POST "shared/iapp/package-management-tasks" -d $DATA
 
 # Install TS Pkg
-DATA="{\"operation\":\"INSTALL\",\"packageFilePath\":\"/var/config/rest/downloads/$TS_FN\"}"
+DATA="{\"operation\":\"INSTALL\",\"packageFilePath\":\"/var/config/rest/downloads/ts.rpm\"}"
 echo -e "\n"$(date) "Install TS Pkg"
+restcurl -X POST "shared/iapp/package-management-tasks" -d $DATA
+
+# Install CFE Pkg
+DATA="{\"operation\":\"INSTALL\",\"packageFilePath\":\"/var/config/rest/downloads/cfe.rpm\"}"
+echo -e "\n"$(date) "Install CFE Pkg"
 restcurl -X POST "shared/iapp/package-management-tasks" -d $DATA
 
 

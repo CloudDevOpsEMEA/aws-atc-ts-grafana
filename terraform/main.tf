@@ -87,6 +87,7 @@ module bigip {
   do_version  = local.setup.bigip.do_version
   as3_version = local.setup.bigip.as3_version
   ts_version  = local.setup.bigip.ts_version
+  cfe_version = local.setup.bigip.cfe_version
 
   subnet_security_group_ids = [
     module.security.ssh_secure_sg,
@@ -102,7 +103,7 @@ module bigip {
 #
 # Create Nginx WebServers
 #
-module nginx_webserver {
+module nginx_webserver_one {
   source = "./modules/webserver"
 
   owner         = local.setup.owner
@@ -110,17 +111,38 @@ module nginx_webserver {
   random_id     = random_id.id.hex
   vpc_subnet_id = module.network.vpc_subnet_id
   ec2_key_name  = module.security.ec2_key_name
-  server_count  = local.setup.webservers.nginx.count
+  server_count  = local.setup.webservers.nginx_one.count
 
   sec_group_ids = [
     module.security.ssh_secure_sg,
     module.security.web_server_sg
   ]
 
-  tenant            = local.setup.webservers.nginx.tenant
-  application       = local.setup.webservers.nginx.application
-  autodiscovery_tag = local.setup.webservers.nginx.autodiscovery_tag
-  docker_command    = local.setup.webservers.nginx.docker_command
+  tenant            = local.setup.webservers.nginx_one.tenant
+  application       = local.setup.webservers.nginx_one.application
+  autodiscovery_tag = local.setup.webservers.nginx_one.autodiscovery_tag
+  docker_command    = local.setup.webservers.nginx_one.docker_command
+}
+
+module nginx_webserver_two {
+  source = "./modules/webserver"
+
+  owner         = local.setup.owner
+  environment   = local.setup.aws.environment
+  random_id     = random_id.id.hex
+  vpc_subnet_id = module.network.vpc_subnet_id
+  ec2_key_name  = module.security.ec2_key_name
+  server_count  = local.setup.webservers.nginx_two.count
+
+  sec_group_ids = [
+    module.security.ssh_secure_sg,
+    module.security.web_server_sg
+  ]
+
+  tenant            = local.setup.webservers.nginx_two.tenant
+  application       = local.setup.webservers.nginx_two.application
+  autodiscovery_tag = local.setup.webservers.nginx_two.autodiscovery_tag
+  docker_command    = local.setup.webservers.nginx_two.docker_command
 }
 
 #

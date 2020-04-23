@@ -11,12 +11,21 @@ output "bigip_data" {
 }
 
 # WebServers Nginx
-output "webservers_nginx" {
+output "webservers_nginx_one" {
   value = <<EOF
 
-      private_ips : ${join(", ", module.nginx_webserver.webserver_private_ips)}
-      public_ips  : ${join(", ", module.nginx_webserver.webserver_public_ips)}
-      public_dns  : ${join(", ", module.nginx_webserver.webserver_public_dns)}
+      private_ips : ${join(", ", module.nginx_webserver_one.webserver_private_ips)}
+      public_ips  : ${join(", ", module.nginx_webserver_one.webserver_public_ips)}
+      public_dns  : ${join(", ", module.nginx_webserver_one.webserver_public_dns)}
+    EOF
+}
+
+output "webservers_nginx_two" {
+  value = <<EOF
+
+      private_ips : ${join(", ", module.nginx_webserver_two.webserver_private_ips)}
+      public_ips  : ${join(", ", module.nginx_webserver_two.webserver_public_ips)}
+      public_dns  : ${join(", ", module.nginx_webserver_two.webserver_public_dns)}
     EOF
 }
 
