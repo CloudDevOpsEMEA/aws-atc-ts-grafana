@@ -1,0 +1,21 @@
+---
+- name: Gather information of the setup
+  block:
+
+    - name: Show the Webserver VIP Exposed public URLs
+      set_fact:
+        nginx_one: "{{ webservers['nginx_one'].protocol }}://{{ network_interfaces[0].private_ip_addresses[webservers['nginx_one'].private_ip_index].association.public_dns_name }}:{{ webservers['nginx_one'].vs_port }}"
+        nginx_two: "{{ webservers['nginx_two'].protocol }}://{{ network_interfaces[0].private_ip_addresses[webservers['nginx_two'].private_ip_index].association.public_dns_name }}:{{ webservers['nginx_two'].vs_port }}"
+        broken: "{{ webservers['broken'].protocol }}://{{ network_interfaces[0].private_ip_addresses[webservers['broken'].private_ip_index].association.public_dns_name }}:{{ webservers['broken'].vs_port }}"
+
+    - name: Process traffic load script jinja template and store result in output folder
+      template:
+        src: templates/generate_load.sh.j2
+        dest: "{{ generateloadscript }}"
+        mode: 0777
+
+    - name: Show BIG-IP and Grafana public admin URL
+      debug:
+        msg: |
+          BIG-IP : https://{{ public_dns_name }}:8443
+          Grafana : http://{{ groups['tag_Role_graphite_grafana'] | map('extract', hostvars, 'public_dns_name') | list | first }}:3000

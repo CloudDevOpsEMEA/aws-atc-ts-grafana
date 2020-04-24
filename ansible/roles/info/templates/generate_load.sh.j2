@@ -26,8 +26,8 @@ function printhelp() {
 
 # Generate traffic in background mode using siege
 function generate_traffic() {
-  echo "siege --concurrent=$CONCURRENT --time=$TIME --benchmark --no-parser $1"
-  siege --concurrent=$CONCURRENT --time=$TIME --benchmark --no-parser $1 &
+  echo "siege --concurrent=${CONCURRENT} --time=${TIME} --benchmark --no-parser ${1}"
+  siege --concurrent=${CONCURRENT} --time=${TIME} --benchmark --no-parser ${1} &
 }
 
 # Precheck is siege is installed and available
@@ -36,55 +36,55 @@ if ! which siege >/dev/null; then
 fi
 
 # Check if necessary input params are set
-if [[ -z "$1" ]]; then
+if [[ -z "${1}" ]]; then
   printhelp
 fi
 
 # Check if target has been set correctly
-if [[ $VALID_TARGETS != *$1* ]]; then
-  echo "Wrong target value '$1', valid targets are [$VALID_TARGETS]"
+if [[ ${VALID_TARGETS} != *${1}* ]]; then
+  echo "Wrong target value '${1}', valid targets are [${VALID_TARGETS}]"
   printhelp
 fi
 
 # Check if type has been set correctly
-if [[ ! -z "$2" ]] && [[ $VALID_TYPES != *$2* ]]; then
-  echo "Wrong type value '$2', valid types are [$VALID_TYPES]"
+if [[ ! -z "${2}" ]] && [[ ${VALID_TYPES} != *${2}* ]]; then
+  echo "Wrong type value '${2}', valid types are [${VALID_TYPES}]"
   printhelp
 fi
 
 # Generate the traffic
-case $1 in 
+case ${1} in 
   nginx_one)
-    generate_traffic ${nginx_one}
+    generate_traffic {{ nginx_one }}
     ;;
   nginx_two)
-    generate_traffic ${nginx_two}
+    generate_traffic {{ nginx_two }}
     ;;
   broken)
-    case $2 in 
+    case ${2} in 
       normal)
-        generate_traffic ${broken}
+        generate_traffic {{ broken }}
         ;;
       slow)
-        generate_traffic ${broken}/api/slow
+        generate_traffic {{ broken }}/api/slow
         ;;
       errors)
-        generate_traffic ${broken}/api/400
-        generate_traffic ${broken}/api/404
-        generate_traffic ${broken}/api/500
+        generate_traffic {{ broken }}/api/400
+        generate_traffic {{ broken }}/api/404
+        generate_traffic {{ broken }}/api/500
         ;;
       random)
-        generate_traffic ${broken}/api/various_delay_random
+        generate_traffic {{ broken }}/api/various_delay_random
         ;;
       *)
-        generate_traffic ${broken}
+        generate_traffic {{ broken }}
         ;;
     esac
     ;;
   all)
-    generate_traffic ${nginx_one}
-    generate_traffic ${nginx_two}
-    generate_traffic ${broken}
+    generate_traffic {{ nginx_one }}
+    generate_traffic {{ nginx_two }}
+    generate_traffic {{ broken }}
     ;;
   *)
     printhelp ;;

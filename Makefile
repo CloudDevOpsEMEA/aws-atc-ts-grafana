@@ -16,9 +16,9 @@ ANSIBLE_DYNAMIC_AWS_INVENTORY_CONFIG=${OUTPUT_FOLDER}/aws_ec2.yml
 GENERATE_LOAD_SCRIPT=${OUTPUT_FOLDER}/generate_load.sh
 
 ## Exec arguments ##
-TERRAFORM_EXTRA_ARGS=-var "setupfile=${SETUP_FILE}" -var "ec2privatekey=${AWS_EC2_PRIVATE_KEY}" -var "awsinventoryconfig=${ANSIBLE_DYNAMIC_AWS_INVENTORY_CONFIG}" -var "generateloadscript=${GENERATE_LOAD_SCRIPT}"
+TERRAFORM_EXTRA_ARGS=-var "setupfile=${SETUP_FILE}" -var "ec2privatekey=${AWS_EC2_PRIVATE_KEY}" -var "awsinventoryconfig=${ANSIBLE_DYNAMIC_AWS_INVENTORY_CONFIG}"
 # ANSIBLE_EXTRA_ARGS=-vvv --extra-vars "setupfile=${SETUP_FILE} outputfolder=${OUTPUT_FOLDER}"
-ANSIBLE_EXTRA_ARGS=--extra-vars "setupfile=${SETUP_FILE} outputfolder=${OUTPUT_FOLDER}"
+ANSIBLE_EXTRA_ARGS=--extra-vars "setupfile=${SETUP_FILE} outputfolder=${OUTPUT_FOLDER} generateloadscript=${GENERATE_LOAD_SCRIPT}"
 
 #####################
 # Terraform Targets #
@@ -46,6 +46,9 @@ configure_bigip:
 
 configure_grafana:
 	cd ${ANSIBLE_FOLDER} && ansible-playbook grafana.yml ${ANSIBLE_EXTRA_ARGS} ;
+
+info:
+	cd ${ANSIBLE_FOLDER} && ansible-playbook info.yml ${ANSIBLE_EXTRA_ARGS} ;
 
 ##################
 # Helper Targets #
