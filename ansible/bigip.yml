@@ -1,5 +1,5 @@
 ---
-- name: Declarative Onboarding (DO) playbook
+- name: BIG-IP Configuration Playbook
   hosts: tag_Role_bigip
   connection: local
   vars_files: "{{ (setupfile is defined) | ternary(setupfile, '../setup.yml') }}"
