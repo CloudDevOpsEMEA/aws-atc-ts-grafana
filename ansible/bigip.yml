@@ -2,7 +2,11 @@
 - name: Declarative Onboarding (DO) playbook
   hosts: tag_Role_bigip
   connection: local
-  vars_files: "{{ setupfile }}"
+  vars_files: "{{ (setupfile is defined) | ternary(setupfile, '../setup.yml') }}"
+  pre_tasks:
+    - name: Set outputfolder if makefile is not used
+      set_fact:
+        outputfolder: "{{ outputfolder | default('../output') }}"
   roles:
     - do
     - as3
