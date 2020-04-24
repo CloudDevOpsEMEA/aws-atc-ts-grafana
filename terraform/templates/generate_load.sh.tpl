@@ -1,3 +1,91 @@
 #!/bin/bash
+#
+# Helper script that downloads ATC RPM components.
+#
 
-siege -c20 ${bigip_address} -b -t30s
+VALID_TARGETS="nginx_one nginx_two broken all"
+VALID_TYPES="normal slow errors random"
+CONCURRENT=10
+TIME=5m
+
+# Print helper on how to use this script
+function printhelp() {
+  echo "Usage: generate_load.sh <target> <type>"
+  echo "    <target> should be one of the following:"
+  echo "        nginx_one : HTTP exposed webserver"
+  echo "        nginx_two : SSL + WAF exposed webserver"
+  echo "        broken    : SSL exposed webserver"
+  echo "        all       : All of the above in parallel"
+  echo "    <type> only for target broken, but one of the following:"
+  echo "        normal : traffic generating 200 OK"
+  echo "        slow   : traffic with slow response"
+  echo "        errors : traffic with error responses"
+  echo "        random : traffic with random responses"
+  exit 0
+}
+
+# Generate traffic in background mode using siege
+function generate_traffic() {
+  echo "siege --concurrent=$CONCURRENT --time=$TIME --benchmark --no-parser $1"
+  siege --concurrent=$CONCURRENT --time=$TIME --benchmark --no-parser $1 &
+}
+
+# Precheck is siege is installed and available
+if ! which siege >/dev/null; then
+    echo "The traffic generator command 'siege' is not installed or in your path"
+fi
+
+# Check if necessary input params are set
+if [[ -z "$1" ]]; then
+  printhelp
+fi
+
+# Check if target has been set correctly
+if [[ $VALID_TARGETS != *$1* ]]; then
+  echo "Wrong target value '$1', valid targets are [$VALID_TARGETS]"
+  printhelp
+fi
+
+# Check if type has been set correctly
+if [[ ! -z "$2" ]] && [[ $VALID_TYPES != *$2* ]]; then
+  echo "Wrong type value '$2', valid types are [$VALID_TYPES]"
+  printhelp
+fi
+
+# Generate the traffic
+case $1 in 
+  nginx_one)
+    generate_traffic ${nginx_one}
+    ;;
+  nginx_two)
+    generate_traffic ${nginx_two}
+    ;;
+  broken)
+    case $2 in 
+      normal)
+        generate_traffic ${broken}
+        ;;
+      slow)
+        generate_traffic ${broken}/api/slow
+        ;;
+      errors)
+        generate_traffic ${broken}/api/400
+        generate_traffic ${broken}/api/404
+        generate_traffic ${broken}/api/500
+        ;;
+      random)
+        generate_traffic ${broken}/api/various_delay_random
+        ;;
+      *)
+        generate_traffic ${broken}
+        ;;
+    esac
+    ;;
+  all)
+    generate_traffic ${nginx_one}
+    generate_traffic ${nginx_two}
+    generate_traffic ${broken}
+    ;;
+  *)
+    printhelp ;;
+esac

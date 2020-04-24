@@ -213,7 +213,9 @@ resource "local_file" "ansible_dynamic_inventory_config" {
 data "template_file" "generate_load_script" {
   template = file("${path.module}/templates/generate_load.sh.tpl")
   vars = {
-    bigip_address = module.bigip.bigip_public_dns[0]
+    nginx_one = format("http://%s:%s", module.bigip.bigip_public_dns[local.setup.webservers.nginx_one.private_ip_index], local.setup.webservers.nginx_one.vs_port)
+    nginx_two = format("https://%s:%s", module.bigip.bigip_public_dns[local.setup.webservers.nginx_two.private_ip_index], local.setup.webservers.nginx_two.vs_port)
+    broken    = format("https://%s:%s", module.bigip.bigip_public_dns[local.setup.webservers.broken.private_ip_index], local.setup.webservers.broken.vs_port)
   }
 }
 
