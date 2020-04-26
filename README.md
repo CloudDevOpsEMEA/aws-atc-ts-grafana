@@ -58,7 +58,7 @@ In order to make the initial configuration for this demo setup as straighfowards
 
 Next, all steps that are used to spinup the demo, are available as Makefile targets. This allows you tto go through the different parts of th demo
 
-Terraform related target include
+Terraform related targets include
 
  - **plan_infra:** perform the planning phase of Terraform. No actual infrastruture is being spun up at this phase
  - **deploy_infra:** perform the actual deployment of your Terrafrom plan
