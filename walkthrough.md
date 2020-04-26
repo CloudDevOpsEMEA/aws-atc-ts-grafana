@@ -550,7 +550,7 @@ A JSON extract of such an event in more details
         "1024-blocks":"3936868",
         "Capacity":"1%",
         "name":"/run"
-      }, ...
+      }
     }
   }
 }
