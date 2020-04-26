@@ -42,7 +42,7 @@ bigip:
 
 ## Terraform part
 
-Next we are going to spin-up our infrastructure on AWS: 1 BIG-IP VE, 6 Web Applications and a EC2 machine containing Grafana/Graphite/Statsd
+Next we are going to spin-up our infrastructure on AWS: 1 BIG-IP VE, 6 web ppplications and one EC2 instance containing Grafana/Graphite/Statsd (using docker containers)
 
 ```console
 # make deploy_infra
@@ -119,9 +119,9 @@ webservers_nginx_two =
 
 ```
 
-One minute and 10 seconds later, the infrastructure is up and running. The terraform step finishes of with some output steps that help you do determine the IP addesses and DNS names of the servers used in the setup
+One minute and 10 seconds later, the infrastructure is up and running. The terraform step finishes with some output steps that help you do determine the IP addesses and DNS names of the servers used in the setup
 
-Let's look at out output folder to see what we've got so far
+Let's look at the output folder to see what we've got so far
 
 ```console
 # ls -1 ./output
@@ -139,22 +139,29 @@ The following files are created as temporary demo artifacts
 Let's see in the AWS Console what actually has been created
 
 ![AWS EC2 Instances](./imgs/aws-ec2-instances.png)
+*AWS EC2 Instances*    
 
-![AWS Security Groups](./imgs/aws-security-groups.png)
+![AWS Security Groups](./imgs/aws-security-groups.png)  
+*AWS Security Groups*    
+
 
 ![AWS Elastic IP Addresses](./imgs/aws-elastic-ips.png)
+*AWS Elastic IP Addresses*    
 
-![BIG-IP Mgmt Interface](./imgs/aws-elastic-ips.png)
+![BIG-IP Mgmt Interface](./imgs/aws-bigip-mgmt-network-intf.png)
+*BIG-IP Mgmt Interface*    
 
-As we are using BIG-IP in a 1NIC deployment scenario, two extra secondary ip addresses are configured, also being exposed using AWS EIP addresses. The first and primary IP address is used for management traffic on port 8443. The two secondary IP addresses are used to expose two Virtual Servers, mapping to our two tenants/partitions on BIG-IP in later configuration. The first tenant/partition will contain two virtual servers on a differenct TCP port (8080 and 8081 respectively), the second tenant/partition will contain on virtual server on TCP port 8080
+As we are using BIG-IP in a 1NIC deployment scenario, two extra secondary ip addresses are configured, both being exposed using AWS EIP addresses. The first and primary IP address is used for management traffic on port 8443. The two secondary IP addresses are used to expose two Virtual Servers, mapping to our two tenants/partitions on BIG-IP in later configuration. The first tenant/partition will contain two virtual servers on a differenct TCP port (8080 and 8081 respectively), the second tenant/partition will contain on virtual server on TCP port 8080
 
-For the sake of completeness, although not striclty necessary, let us also create the AWS dynamic inventory yaml file
+For the sake of completeness, although not strictly necessary, let us also create the AWS dynamic inventory yaml file
 
 ```console
 # make inventory
 cd /Users/me/Documents/Git/f5/aws-atc-ts-grafana/ansible && ansible-inventory --yaml --list > /Users/me/Documents/Git/f5/aws-atc-ts-grafana/output/aws_inventory.yml ;
 
 # head -n 10 output/aws_inventory.yml
+```
+```yaml
 all:
   children:
     aws_ec2:
@@ -164,10 +171,11 @@ all:
           architecture: x86_64
           block_device_mappings:
           - device_name: /dev/sda1
-            ebs:
+          ...
+
 ```
 
-This file, `aws_inventory.yml` is also stored as temporary build artifact in the output folder was used during development of this demo to pinpoint the correct host variables to be used in Ansible. Ansible will generate this file dynamically in its caching folder as well and use that one, so changing this one will not have any effect
+This file, `aws_inventory.yml` is also stored as temporary build artifact in the output folder. It was used during development of this demo to pinpoint the correct host variables to be used in Ansible. Ansible will generate this file dynamically in its caching folder and use that one, so changing this one will not have any effect
 
 ## Ansible part
 
