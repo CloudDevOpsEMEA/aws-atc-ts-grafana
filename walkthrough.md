@@ -391,7 +391,7 @@ If we look at the output of the previous step, we see that the following TS conf
 
 Two consumers are configured: one for Graphite and one for StatsD. Note that for Graphite, BIG-IP will send JSON blobs with telemetry data to the `/events` endpoint. Events can be used in Grafana as annotations to enrich exiting metrics graphs. The StatsD consumer will send the same information in a metric format that is available in Graphite as metrics
 
-In order to configure Grafana, add Graphite as a data source and add the BIG-IP TS example dashboard, run the final step of the configuration through Ansible
+In order to configure Grafana, add Graphite as a data source and add the BIG-IP TS example dashboard, run the final step of the configuration through Ansible implemented in the `grafana.yml` playbook
 
 ```console
 # make configure_grafana
@@ -457,16 +457,16 @@ Let's look at StatsD first. In order to do so, you can use `netcat` as hinted in
   ...
 ```
 
-**Gauges** is one of the metric types supposed by StatsD, besided counters and timers
+**Gauges** is one of the metric types supported by StatsD, besides counters and timers
 
-We can have a visual representation of the StatsD gauges inside Graphite by surfing to the URL hinted in above as well
+We can have a visual representation of the StatsD gauges inside Graphite by surfing to the URL hinted above as well
 
 ![Graphite BIG-IP StatsD TS Gauges](./imgs/graphite-bigip-ts-gauges.png)
 *Graphite BIG-IP StatsD TS Gauges*
 <br />
 <br />
 
-We can have a visual representation of the Graphite Events inside Graphite by surfing to the URL on the /events endpoint
+We can have a visual representation of the Graphite Events inside Graphite by surfing to the URL on the `/events` endpoint
 
 
 ![Graphite BIG-IP Graphite Events](./imgs/graphite-bigip-ts-events.png)
