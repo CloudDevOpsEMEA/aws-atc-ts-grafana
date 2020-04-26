@@ -124,7 +124,7 @@ One minute and 10 seconds later, the infrastructure is up and running. The terra
 Let's look at the output folder to see what we've got so far
 
 ```console
-# ls -1 ./output
+# ls -1 output
 
 aws_ec2.yml
 aws_tfplan.tf
@@ -201,18 +201,156 @@ cd /Users/me/Documents/Git/f5/aws-atc-ts-grafana/ansible && ansible-playbook big
 
 PLAY [BIG-IP Configuration Playbook] *********************
 
-TASK [Gathering Facts] ***********************************
-ok: [ec2-54-77-149-146.eu-west-1.compute.amazonaws.com]
-
-TASK [Set outputfolder if makefile is not used] *********************
-ok: [ec2-54-77-149-146.eu-west-1.compute.amazonaws.com]
-
 TASK [do : Set connection provider for BIG-IP tasks] *********************
 ok: [ec2-54-77-149-146.eu-west-1.compute.amazonaws.com]
 
 TASK [do : Wait for BIG-IP to be ready to take configuration] *********************
 
+TASK [do : Process DO jinja template and store result in output folder] *********************
+changed: [ec2-54-77-149-146.eu-west-1.compute.amazonaws.com]
+
+TASK [Perform DO for initial device onboarding] *********************
+
+TASK [f5devcentral.atc_deploy : POST DO declaration] *********************
+ok: [ec2-54-77-149-146.eu-west-1.compute.amazonaws.com -> localhost]
+
+TASK [f5devcentral.atc_deploy : Wait for DO Task to complete] *********************
+FAILED - RETRYING: Wait for DO Task to complete (90 retries left).
+FAILED - RETRYING: Wait for DO Task to complete (38 retries left).
+ok: [ec2-54-77-149-146.eu-west-1.compute.amazonaws.com -> localhost]
+
+TASK [do : Wait for DO initial onboarding to fully complete] *********************
+ok: [ec2-54-77-149-146.eu-west-1.compute.amazonaws.com]
+
+TASK [do : Store result of DO onboarding in output folder] *********************
+changed: [ec2-54-77-149-146.eu-west-1.compute.amazonaws.com]
+
+TASK [do : DO final result verification of DO onboarding] *********************
+ok: [ec2-54-77-149-146.eu-west-1.compute.amazonaws.com] =>
+  msg: |-
+    Verify on BIG-IP if your desired results was achieved
+    > Admin UI   : https://ec2-54-77-149-146.eu-west-1.compute.amazonaws.com:8443
+    > REST URI   : https://ec2-54-77-149-146.eu-west-1.compute.amazonaws.com:8443/mgmt/shared/declarative-onboarding
+    > DOCS URL   : https://clouddocs.f5.com/products/extensions/f5-declarative-onboarding/latest
+    > SCHEMA REF : https://clouddocs.f5.com/products/extensions/f5-declarative-onboarding/latest/schema-reference.html
+    > GITHUB SRC : https://github.com/F5Networks/f5-declarative-onboarding
+
 ...
- 
+
+TASK [as3 : Wait for BIG-IP to be ready to take configuration] *********************
+ok: [ec2-54-77-149-146.eu-west-1.compute.amazonaws.com]
+
+TASK [as3 : Merge all AS3 JSON blobs into one blob] *********************
+ok: [ec2-54-77-149-146.eu-west-1.compute.amazonaws.com] => (item=nginx_one)
+ok: [ec2-54-77-149-146.eu-west-1.compute.amazonaws.com] => (item=nginx_two)
+ok: [ec2-54-77-149-146.eu-west-1.compute.amazonaws.com] => (item=broken)
+
+TASK [as3 : Write the result of the merged AS3 JSON declaration in output folder] *********************
+changed: [ec2-54-77-149-146.eu-west-1.compute.amazonaws.com]
+
+TASK [f5devcentral.atc_deploy : POST AS3 declaration] *********************
+ok: [ec2-54-77-149-146.eu-west-1.compute.amazonaws.com -> localhost]
+
+TASK [f5devcentral.atc_deploy : Wait for AS3 Task to complete] *********************
+FAILED - RETRYING: Wait for AS3 Task to complete (20 retries left).
+FAILED - RETRYING: Wait for AS3 Task to complete (15 retries left).
+changed: [ec2-54-77-149-146.eu-west-1.compute.amazonaws.com -> localhost]
+
+TASK [f5devcentral.atc_deploy : GET AS3 declaration] *********************
+ok: [ec2-54-77-149-146.eu-west-1.compute.amazonaws.com -> localhost]
+
+TASK [as3 : Store result of AS3 deployment in output folder] *********************
+changed: [ec2-54-77-149-146.eu-west-1.compute.amazonaws.com]
+
+TASK [as3 : AS3 final result verification on BIG-IP] *********************
+ok: [ec2-54-77-149-146.eu-west-1.compute.amazonaws.com] =>
+  msg: |-
+    Verify on BIG-IP if your desired results was achieved
+      > Admin UI : https://ec2-54-77-149-146.eu-west-1.compute.amazonaws.com:8443
+      > REST URI : https://ec2-54-77-149-146.eu-west-1.compute.amazonaws.com:8443/mgmt/shared/appsvcs/declare
+      > DOCS URL   : https://clouddocs.f5.com/products/extensions/f5-appsvcs-extension/latest
+      > SCHEMA REF : https://clouddocs.f5.com/products/extensions/f5-appsvcs-extension/latest/refguide/schema-reference.html
+      > GITHUB SRC : https://github.com/F5Networks/f5-appsvcs-extension
+
+...
+
+TASK [ts : Wait for BIG-IP to be ready to take configuration] *********************
+ok: [ec2-54-77-149-146.eu-west-1.compute.amazonaws.com]
+
+TASK [ts : Get the private and public ip of the host running graphite/grafana/statsd] *********************
+ok: [ec2-54-77-149-146.eu-west-1.compute.amazonaws.com]
+
+TASK [ts : Process jinja template and store result for artifact storage (graphite json blob for TS)] *********************
+changed: [ec2-54-77-149-146.eu-west-1.compute.amazonaws.com]
+
+TASK [f5devcentral.atc_deploy : POST TS declaration] *********************
+ok: [ec2-54-77-149-146.eu-west-1.compute.amazonaws.com]
+
+TASK [ts : Store result of TS registration for artifact storage (graphite json blob for TS)] *********************
+changed: [ec2-54-77-149-146.eu-west-1.compute.amazonaws.com]
+
+TASK [ts : TS final result verification on BIG-IP] *********************
+ok: [ec2-54-77-149-146.eu-west-1.compute.amazonaws.com] =>
+  msg: |-
+    Verify on BIG-IP if your desired results was achieved
+      > Admin UI   : https://ec2-54-77-149-146.eu-west-1.compute.amazonaws.com:8443
+      > REST URI   : https://ec2-54-77-149-146.eu-west-1.compute.amazonaws.com:8443/mgmt/shared/telemetry/declare
+      > DOCS URL   : https://clouddocs.f5.com/products/extensions/f5-telemetry-streaming/latest
+      > SCHEMA REF : https://clouddocs.f5.com/products/extensions/f5-telemetry-streaming/latest/schema-reference.html
+      > GITHUB SRC : https://github.com/F5Networks/f5-telemetry-streaming
+
+PLAY RECAP ******************************************************************************************************************************
+ec2-54-77-149-146.eu-west-1.compute.amazonaws.com : ok=72   changed=7    unreachable=0    failed=0    skipped=34   rescued=0    ignored=0
+
 ```
+
+The above traces show the three roles executed (notice that some of the skipped steps have been removed for readability reasons). It is worth stressing out that we did merge the AS3 JSON blob declarations before submitting it. This is because the AS3 API is Tenant centric and does not allow to update or create an application without the full tenant specification containing all application definitions for that particular tenant
+
+Your output folder shoud now look as follows
+
+```console
+# ls -1 output
+as3_merged.json
+as3_merged_result.json
+aws_ec2.yml
+aws_inventory.yml
+aws_tfplan.tf
+do_onboard.json
+do_onboard_result.json
+ec2_private_key.pem
+ts_graphite_statsd.json
+```
+
+The ATC JSON blobs that have been send to BIG-IP for DO/AS3/TS are available, as well as the result. This are some screenshots of the results within the BIG-IP administrative GUI
+
+
+![Team_Ningx Virtual Servers](./imgs/bigip-team-nginx-vs.png)
+*Team_Ningx Virtual Servers*
+<br />
+<br />
+
+![Team_Nginx Pools](./imgs/bigip-team-nginx-pool.png)
+*Team_Nginx Pool*
+<br />
+<br />
+
+![Team_Nginx Pool Members](./imgs/bigip-team-nginx-member.png)
+*Team_Nginx Pool Members*
+<br />
+<br />
+
+![Team_Broken Virtual Servers](./imgs/bigip-team-broken-vs.png)
+*Team_Broken Virtual Servers*
+<br />
+<br />
+
+![Team_Broken Pools](./imgs/bigip-team-broken-pool.png)
+*Team_Broken Pools*
+<br />
+<br />
+
+![Team_Broken Pool Members](./imgs/bigip-team-broken-member.png)
+*Team_Broken Pool Members*
+<br />
+<br />
 
