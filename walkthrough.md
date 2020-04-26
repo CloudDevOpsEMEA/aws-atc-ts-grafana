@@ -140,20 +140,24 @@ Let's see in the AWS Console what actually has been created
 
 ![AWS EC2 Instances](./imgs/aws-ec2-instances.png)
 *AWS EC2 Instances*
-
-
+  
+  
+  
 ![AWS Security Groups](./imgs/aws-security-groups.png)  
 *AWS Security Groups*
-
-
+  
+  
+  
 ![AWS Elastic IP Addresses](./imgs/aws-elastic-ips.png)
 *AWS Elastic IP Addresses*
-
-
+  
+  
+  
 ![BIG-IP Mgmt Interface](./imgs/aws-bigip-mgmt-network-intf.png)
 *BIG-IP Mgmt Interface*
-
-
+  
+  
+  
 As we are using BIG-IP in a 1NIC deployment scenario, two extra secondary ip addresses are configured, both being exposed using AWS EIP addresses. The first and primary IP address is used for management traffic on port 8443. The two secondary IP addresses are used to expose two Virtual Servers, mapping to our two tenants/partitions on BIG-IP in later configuration. The first tenant/partition will contain two virtual servers on a differenct TCP port (8080 and 8081 respectively), the second tenant/partition will contain on virtual server on TCP port 8080
 
 For the sake of completeness, although not strictly necessary, let us also create the AWS dynamic inventory yaml file
