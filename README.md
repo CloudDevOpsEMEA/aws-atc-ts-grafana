@@ -99,7 +99,7 @@ TODO (screenshots of the results and intermediate steps)
 More information on the F5 Automation Tool Chain Components can be found within the official documentation on F5 CloudDocs at
 
  - **DO:** https://clouddocs.f5.com/products/extensions/f5-declarative-onboarding/latest
- - **AS3:** https://clouddocs.f5.com/products/extensions/f5-appsvcs-extension/latest/
+ - **AS3:** https://clouddocs.f5.com/products/extensions/f5-appsvcs-extension/latest
  - **TS:** https://clouddocs.f5.com/products/extensions/f5-telemetry-streaming/latest
  - **CFE:** https://clouddocs.f5.com/products/extensions/f5-cloud-failover/latest
 
