@@ -18,14 +18,14 @@
           "virtualAddresses": ["{{ network_interfaces[0].private_ip_addresses[webservers[item].private_ip_index].private_ip_address }}"],
           "virtualPort": {{ webservers[item].vs_port }},
           "snat": "auto",
-          "pool": "WebServerPoolHttps",
+          "pool": "{{ webservers[item].pool }}",
           "profileHTTP": "basic",
           "serverTLS": "WebTLS",
           "policyWAF": {
 						"use": "LinuxHigh"
 					}
         },
-        "WebServerPoolHttps": {
+        "{{ webservers[item].pool }}": {
           "class": "Pool",
           "monitors": ["http"],
           "reselectTries": 100,

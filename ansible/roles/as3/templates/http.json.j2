@@ -18,9 +18,9 @@
           "virtualAddresses": ["{{ network_interfaces[0].private_ip_addresses[webservers[item].private_ip_index].private_ip_address }}"],
           "virtualPort": {{ webservers[item].vs_port }},
           "snat": "auto",
-          "pool": "WebServerPool"
+          "pool": "{{ webservers[item].pool }}"
         },
-        "WebServerPool": {
+        "{{ webservers[item].pool }}": {
           "class": "Pool",
           "monitors": ["http"],
           "members": [
