@@ -354,3 +354,205 @@ The ATC JSON blobs that have been send to BIG-IP for DO/AS3/TS are available, as
 <br />
 <br />
 
+## Grafana / Graphite / StatsD
+
+If we look at the output of the previous step, we see that the following TS configuration has been applied
+
+```json
+{
+  "class": "Telemetry",
+  "MyTelemetrySystem": {
+      "class": "Telemetry_System",
+      "allowSelfSignedCert": true,
+      "systemPoller": {
+          "interval": 60
+      }
+  },    
+  "GraphiteConsumer": {
+      "class": "Telemetry_Consumer",
+      "type": "Graphite",
+      "host": "10.0.0.55",
+      "protocol": "http",
+      "port": 80
+  },
+  "StatsdConsumer": {
+    "class": "Telemetry_Consumer",
+    "type": "Statsd",
+    "host":"10.0.0.55",
+    "protocol": "udp",
+    "port": 8125
+  },
+  "MyTelemetryListener": {
+      "class": "Telemetry_Listener",
+      "port": 6514
+  }
+}
+```
+
+Two consumers are configured: one for Graphite and one for StatsD. Note that for Graphite, BIG-IP will send JSON blobs with telemetry data to the `/events` endpoint. Events can be used in Grafana as annotations to enrich exiting metrics graphs. The StatsD consumer will send the same information in a metric format that is available in Graphite as metrics
+
+In order to configure Grafana, add Graphite as a data source and add the BIG-IP TS example dashboard, run the final step of the configuration through Ansible
+
+```console
+# make configure_grafana
+
+cd /Users/me/Documents/Git/f5/aws-atc-ts-grafana/ansible && ansible-playbook grafana.yml --extra-vars "setupfile=/Users/me/Documents/Git/f5/aws-atc-ts-grafana/setup.yml outputfolder=/Users/me/Documents/Git/f5/aws-atc-ts-grafana/output generateloadscript=/Users/me/Documents/Git/f5/aws-atc-ts-grafana/output/generate_load.sh" ;
+
+PLAY [Grafana Configuration Playbook] *********************
+
+TASK [Gathering Facts] *********************
+ok: [ec2-54-77-149-146.eu-west-1.compute.amazonaws.com]
+
+TASK [Set outputfolder if makefile is not used] *********************
+ok: [ec2-54-77-149-146.eu-west-1.compute.amazonaws.com]
+
+TASK [grafana : Get the private and public ip of the host running graphite/grafana/statsd] *********************
+ok: [ec2-54-77-149-146.eu-west-1.compute.amazonaws.com]
+
+TASK [grafana : Process grafana datasource for graphite jinja template and store result in output folder] *********************
+changed: [ec2-54-77-149-146.eu-west-1.compute.amazonaws.com]
+
+TASK [grafana : Check of grafana datasource for graphite already exists] *********************
+ok: [ec2-54-77-149-146.eu-west-1.compute.amazonaws.com]
+
+TASK [grafana : Add graphite datasource into grafana] *********************
+ok: [ec2-54-77-149-146.eu-west-1.compute.amazonaws.com]
+
+TASK [grafana : Process grafana dashboard for statsd jinja template and store result in output folder] *********************
+changed: [ec2-54-77-149-146.eu-west-1.compute.amazonaws.com]
+
+TASK [grafana : Check if grafana dashboard for statsd already exists] *********************
+ok: [ec2-54-77-149-146.eu-west-1.compute.amazonaws.com]
+
+TASK [grafana : Add graphite statsd dashboard into grafana] *********************
+ok: [ec2-54-77-149-146.eu-west-1.compute.amazonaws.com]
+
+TASK [grafana : Print the URLs for Grafana / Graphite / Statsd verification] *********************
+ok: [ec2-54-77-149-146.eu-west-1.compute.amazonaws.com] =>
+  msg: |-
+    Verify if metrics and/or events are arriving at the following admin UIs
+      > Grafana UI   : http://ec2-34-244-108-113.eu-west-1.compute.amazonaws.com:3000
+      > Graphite UI  : http://ec2-34-244-108-113.eu-west-1.compute.amazonaws.com:80
+      > StatsD Admin : echo "gauges" | nc ec2-34-244-108-113.eu-west-1.compute.amazonaws.com 8126
+
+PLAY RECAP ******************************************************************************************************************************
+ec2-54-77-149-146.eu-west-1.compute.amazonaws.com : ok=10   changed=2    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+
+```
+
+Let's look at StatsD first. In order to do so, you can use `netcat` as hinted in the final step above
+
+```console
+# echo "gauges" | nc ec2-34-244-108-113.eu-west-1.compute.amazonaws.com 8126
+{
+  'statsd.timestamp_lag': 0,
+  'f5telemetry.ip-10-0-0-130-eu-west-1-compute-internal.system.networkInterfaces.1-0.counters-bitsIn': 297895992,
+  'f5telemetry.ip-10-0-0-130-eu-west-1-compute-internal.system.networkInterfaces.1-0.counters-bitsOut': 0,
+  'f5telemetry.ip-10-0-0-130-eu-west-1-compute-internal.system.networkInterfaces.mgmt.counters-bitsIn': 248764520,
+  'f5telemetry.ip-10-0-0-130-eu-west-1-compute-internal.system.networkInterfaces.mgmt.counters-bitsOut': 134973160,
+  'f5telemetry.ip-10-0-0-130-eu-west-1-compute-internal.system.tmmTraffic.clientSideTraffic-bitsIn': 62854192,
+  'f5telemetry.ip-10-0-0-130-eu-west-1-compute-internal.system.tmmTraffic.clientSideTraffic-bitsOut': 229153456,
+  'f5telemetry.ip-10-0-0-130-eu-west-1-compute-internal.system.tmmTraffic.serverSideTraffic-bitsIn': 62432120,
+  'f5telemetry.ip-10-0-0-130-eu-west-1-compute-internal.system.tmmTraffic.serverSideTraffic-bitsOut': 228977008,
+  ...
+```
+
+**Gauges** is one of the metric types supposed by StatsD, besided counters and timers
+
+We can have a visual representation of the StatsD gauges inside Graphite by surfing to the URL hinted in above as well
+
+![Graphite BIG-IP StatsD TS Gauges](./imgs/graphite-bigip-ts-gauges.png)
+*Graphite BIG-IP StatsD TS Gauges*
+<br />
+<br />
+
+We can have a visual representation of the Graphite Events inside Graphite by surfing to the URL on the /events endpoint
+
+
+![Graphite BIG-IP Graphite Events](./imgs/graphite-bigip-ts-events.png)
+*Graphite BIG-IP Graphite Events*
+<br />
+<br />
+
+
+![Graphite BIG-IP Graphite Event Details](./imgs/graphite-bigip-ts-eventdetails.png)
+*Graphite BIG-IP Graphite Event Details*
+<br />
+<br />
+
+A JSON extract of such an event in more details
+
+```json
+{
+  "system":{
+    "hostname":"ip-10-0-0-130.eu-west-1.compute.internal",
+    "machineId":"17616a24-e626-423f-bcc0-0f31563ee116",
+    "version":"15.0.1.3",
+    "versionBuild":"0.0.4",
+    "marketingName":"BIG-IP Virtual Edition",
+    "platformId":"Z100",
+    "chassisId":"e3ca2aec-581c-d7a6-2630aba2d85a",
+    "baseMac":"06:55:4D:C6:A0:08",
+    "provisioning":{
+      "afm":{
+        "name":"afm",
+        "level":"none"
+      },
+      "am":{
+        "name":"am",
+        "level":"none"
+      },
+      "apm":{
+        "name":"apm",
+        "level":"none"
+      },
+      "asm":{
+        "name":"asm",
+        "level":"nominal"
+      },
+      "avr":{
+        "name":"avr",
+        "level":"nominal"
+      },
+      "dos":{
+        "name":"dos",
+        "level":"none"
+      },
+      "ltm":{
+        "name":"ltm",
+        "level":"nominal"
+      },
+      "pem":{
+        "name":"pem",
+        "level":"none"
+      }
+    },
+    "systemTimestamp":"2020-04-26T22:02:56.000Z",
+    "syncMode":"standalone",
+    "callBackUrl":"https://10.0.0.130",
+    "diskStorage":{
+      "/":{
+        "1024-blocks":"428150",
+        "Capacity":"36%",
+        "name":"/"
+      },
+      "/dev":{
+        "1024-blocks":"3927768",
+        "Capacity":"1%",
+        "name":"/dev"
+      },
+      "/dev/shm":{
+        "1024-blocks":"3936868",
+        "Capacity":"1%",
+        "name":"/dev/shm"
+      },
+      "/run":{
+        "1024-blocks":"3936868",
+        "Capacity":"1%",
+        "name":"/run"
+      }, ...
+    }
+  }
+}
+```
+
