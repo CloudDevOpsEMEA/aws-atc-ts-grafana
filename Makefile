@@ -1,6 +1,7 @@
 .PHONY: plan_infra deploy_infra destroy_infra reset_infra
-.PHONY: do_license do_unlicense as3_deploy as3_remove ts_cloudwatch  
-.PHONY: inventory install_galaxy_modules clean_output generate_load terraform_validate terraform_update
+.PHONY: configure_bigip configure_grafana info
+.PHONY: install_galaxy_modules inventory clean_output terraform_validate terraform_update bigip_payg_amis
+.PHONY: all
 
 ## Input variables ##
 SETUP_FILE=${CURDIR}/setup.yml
@@ -64,9 +65,6 @@ inventory:
 clean_output:
 	rm -f ${OUTPUT_FOLDER}/*.yml ${OUTPUT_FOLDER}/*.json ${OUTPUT_FOLDER}/*.tf ${OUTPUT_FOLDER}/*.sh ${OUTPUT_FOLDER}/*.pem ;
 
-generate_load_http:
-	${OUTPUT_FOLDER}/generate_load.sh ;
-
 terraform_validate: 
 	cd ${TERRAFORM_FOLDER} && terraform validate ;
 	cd ${TERRAFORM_FOLDER} && terraform fmt -recursive ;
@@ -77,5 +75,4 @@ terraform_update:
 bigip_payg_amis:
 	$(shell aws ec2 describe-images --owners 679593333241 | grep PAYG | grep Description)
 
-# test:
-# 	cd ${ANSIBLE_FOLDER} && ansible-playbook show_inv.yml ${ANSIBLE_EXTRA_ARGS}
+all: deploy_infra configure_bigip configure_grafana info
