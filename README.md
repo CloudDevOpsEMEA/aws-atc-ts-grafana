@@ -2,13 +2,13 @@
 
 ## Introduction
 
-This repository is a demonstation on how to use an F5 Networks BIG-IP in combination with StatsD, Graphite and Grafana for monitoring purposes. The Automation Tool Chain is used to configure the BIG-IP Virtual Edition inside AWS
+This repository is a demonstration on how to use an F5 Networks BIG-IP in combination with StatsD, Graphite and Grafana for monitoring purposes. The Automation Tool Chain is used to configure the BIG-IP Virtual Edition inside AWS
 
 The following setup is used 
 
 ![AWS Demo Setup Topology](./imgs/aws-atc-ts-grafana-aws.png)
 
-For the sake of simplicity, we have chosen to deploy BIG-IP in a 1NIC configuration, inside one subnet only. In production environment, you might want to opt for a 2NIC or a 3NIC deploy to seperate public, private and management traffic
+For the sake of simplicity, we have chosen to deploy BIG-IP in a 1NIC configuration, inside one subnet only. In a production environment, you might want to opt for a 2NIC or a 3NIC deploy to seperate public, private and management traffic
 
 Terraform is used to create the network and spin up the necessary virtual machines (EC2 instances). The terraform code is divided into seperate modules for clarity reasons
 
@@ -17,7 +17,7 @@ Terraform is used to create the network and spin up the necessary virtual machin
  - **network:** configure the AWS VPC and subnet
  - **security:** create a fresh EC2 key pair, create an AWS Secret Manager entry for the BIG-IP password and the necessary AWS Security Groups
 
-In the second step, Anible is used to configure the BIG-IP and Grafana. The following roles are defined
+In the second step, Ansible is used to configure the BIG-IP and Grafana. The following roles are defined
 
  - **do:** Declarative Onboarding to initialise the BIG-IP in the network
  - **as3:** Application Services 3 to create the necessary virtual servers
@@ -25,9 +25,9 @@ In the second step, Anible is used to configure the BIG-IP and Grafana. The foll
  - **grafana:** Configure the Graphite datasource and load the dashboard
  - **info:** Display some information about the setup and create a load generation script
 
-In the AS3 part, three webservers are exposed using BIG-IP LTM Virtual Server functionality. The two Nginx hosted web applications are configured into 1 tenant/partition ***Team_Nginx***, a second demo web application written in Python3 Flask is configured in a seperate tenant/partition named ***Team_Broken***. This web application allows to control and generate bad/slow traffic. All application are in autodiscovery mode, menaing that based on predefined AWS tag key value pairs, BIG-IP will automatically populate the corresponding VS pools
+In the AS3 part, three webservers are exposed using BIG-IP LTM Virtual Server functionality. The two Nginx hosted web applications are configured into a seperate tenant/partition ***Team_Nginx***, a second demo web application written in Python3 Flask is configured in another tenant/partition named ***Team_Broken***. This web application allows to control and generate bad and/or slow traffic. All application are in autodiscovery mode, meaning that based on predefined AWS tag key value pairs, BIG-IP will automatically populate the corresponding VS pools
 
-The applications are configured and exposed as follows, using different AS3 configurations for demo purposes of how AS3 is a perfect match for declarative application exposure using BIG-IP ATC
+The applications are configured and exposed as follows, using different AS3 configurations for demo purposes on how AS3 is a perfect match for declarative application exposure using BIG-IP ATC
 
 | Application | Tenant/Partition | Server Pool | Profile | Exposed URL |
 |---|---|---|---|---|
@@ -37,7 +37,7 @@ The applications are configured and exposed as follows, using different AS3 conf
 
 ## Prerequisites
 
-The following is a list of prerquirements needed on your host system before you can succesfully run this demo setup
+The following is a list of prerequisites needed on your host system before you can succesfully run this demo setup
 
  - AWS Market place BIG-IP subscription confirmation: in order to be able to use the BIG-IP VE on AWS, you will need to confirm a market place subscription
    - Go to [the AWS marketplace](https://console.aws.amazon.com/marketplace/home?#/search!mpSearch/search?text=F5+BIGIP-8%3D*PAYG*) and subscribe to the proper BIG-IP VE matching your *setup.yml* parameter value
@@ -54,14 +54,16 @@ The following is a list of prerquirements needed on your host system before you 
 
 ## Usage
 
-In order to make the initial configuration for this demo setup as straighfowards as possible, all necessary configuration parameters are externalized into a *setup.yml* file. Since this setup file will contain sensative information like credentials, an example *setup.change.yml* is provided in the root of this repository as an example. Make sure to change the necessary *changme* marked values to suit your needs
+In order to make the initial configuration for this demo setup as straightfoward as possible, all necessary configuration parameters are externalized into a *setup.yml* file. Since this setup file will contain sensative information like credentials, an example *setup.change.yml* is provided in the root of this repository as an example. Make sure to change the necessary *changme* marked values to suit your needs
 
-Next, all steps that are used to spinup the demo, are available as Makefile targets. This allows you tto go through the different parts of th demo
+**TODO:** copy paste the `setup.change.yml` to `setup.yml` and modify the parameters to your local needs. Do **NOT** commit this file into source control (it is specifically excluded in the `.gitignore` file)!
+
+Next, all steps that are used to spin up the demo, are available as makefile targets. This allows you to go through the different parts of the demo one step at a time
 
 ### Terraform targets
 
- - **plan_infra:** perform the planning phase of Terraform. No actual infrastruture is being spun up at this phase
- - **deploy_infra:** perform the actual deployment of your Terrafrom plan
+ - **plan_infra:** perform the planning phase of terraform. No actual infrastruture is being spun up at this phase
+ - **deploy_infra:** perform the actual deployment of your terraform plan
  - **destroy_infra:** destroy your infrastructure (do not forget this after a demo or a training)
  - **reset_infra:** destroy your infrastructure and start spinning up a fresh one from scratch
 
@@ -76,7 +78,7 @@ Next, all steps that are used to spinup the demo, are available as Makefile targ
  - **install_galaxy_modules:** install the two F5 Networks provided Ansible Galaxy modules used in this demo: 
    - `f5devcentral.atc_deploy` to perform DO/AS3/TS actions
    - `f5networks.f5_modules` to wait for BIG-IP to be ready after the terraform spin-up
- - **inventory:** generate a yaml file containing your AWS dynamic inventory file. This is not needed to run the demo, but essential for debugging and understanding of the variable herein referred inside the Ansible roles. When you run the Ansible playbook bigip, Ansible will generate this file in it's own cache in order to resolve the reference variables
+ - **inventory:** generate a yaml file containing your AWS dynamic inventory. This is not needed to run the demo, but essential for debugging and understanding of the variables herein referred inside the Ansible roles. When you run the Ansible playbook bigip, Ansible will generate this file in it's own cache in order to resolve the referenced variables
  - **clean_output:** remove all temporary demo artifacts
  - **terraform_validate:** perform a syntax validation and linting step on the terraform code to maintain clean and readable code
  - **terraform_update:** update the terraform dependent modules
@@ -103,7 +105,7 @@ More information on the F5 Automation Tool Chain Components can be found within 
  - **TS:** https://clouddocs.f5.com/products/extensions/f5-telemetry-streaming/latest
  - **CFE:** https://clouddocs.f5.com/products/extensions/f5-cloud-failover/latest
 
-The source code and public feature request tracking of the F5 Automation Tool Chain Components can be found on Github at
+The source code (and public feature request tracking) of the F5 Automation Tool Chain Components can be found on Github at
 
  - **DO:** https://github.com/F5Networks/f5-declarative-onboarding
  - **AS3:** https://github.com/F5Networks/f5-appsvcs-extension
