@@ -58,20 +58,20 @@ In order to make the initial configuration for this demo setup as straighfowards
 
 Next, all steps that are used to spinup the demo, are available as Makefile targets. This allows you tto go through the different parts of th demo
 
-Terraform related targets include
+### Terraform related targets
 
  - **plan_infra:** perform the planning phase of Terraform. No actual infrastruture is being spun up at this phase
  - **deploy_infra:** perform the actual deployment of your Terrafrom plan
  - **destroy_infra:** destroy your infrastructure (do not forget this after a demo or a training)
  - **reset_infra:** destroy your infrastructure and start spinning up a fresh one from scratch
 
-Ansible related targets include
+### Ansible related targets
 
  - **configure_bigip:** perform the DO/AS3/TS steps to configure BIG-IP 
  - **configure_grafana:** configure Graphite as a datasource and import the dashboard
  - **info:** print information of your setup (IP address, DNS names) and generate a bash based load script
 
-Helper targets include
+### Helper targets
 
  - **install_galaxy_modules:** install the two F5 Networks provided Ansible Galaxy modules used in this demo: 
    - `f5devcentral.atc_deploy` to perform DO/AS3/TS actions
