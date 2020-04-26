@@ -40,7 +40,7 @@ The applications are configured and exposed as follows, using different AS3 conf
 The following is a list of prerquirements needed on your host system before you can succesfully run this demo setup
 
  - AWS Market place BIG-IP subscription confirmation: in order to be able to use the BIG-IP VE on AWS, you will need to confirm a market place subscription
-   - Go to https://console.aws.amazon.com/marketplace/home?#/search!mpSearch/search?text=F5+BIGIP-8%3D*PAYG* and subscribe to the proper BIG-IP VE matching your *setup.yml* parameter value
+   - Go to [the AWS marketplace](https://console.aws.amazon.com/marketplace/home?#/search!mpSearch/search?text=F5+BIGIP-8%3D*PAYG*) and subscribe to the proper BIG-IP VE matching your *setup.yml* parameter value
    - You can also use BYOL, but the DO step would need some modification in order to use an existing license or a BIG-IQ provisioned license pool
  - Pre-installed SW
    - Ansible
