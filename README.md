@@ -25,7 +25,15 @@ In the second step, Anible is used to configure the BIG-IP and Grafana. The foll
  - **grafana:** Configure the Graphite datasource and load the dashboard
  - **info:** Display some information about the setup and create a load generation script
 
-In the AS3 part, three webservers are exposed using BIG-IP LTM Virtual Server functionality. The two Nginx hosted web applications are configured into 1 tenant/partition *Team_Nginx*, a second demo web application written in Python3 Flask is configured in a seperate tenant/partition named Team_Broken. This web application allows to control and generate bad/slow traffic
+In the AS3 part, three webservers are exposed using BIG-IP LTM Virtual Server functionality. The two Nginx hosted web applications are configured into 1 tenant/partition *Team_Nginx*, a second demo web application written in Python3 Flask is configured in a seperate tenant/partition named Team_Broken. This web application allows to control and generate bad/slow traffic. All application are in autodiscovery mode, menaing that based on predefined AWS tag key value pairs, BIG-IP will automatically populate the corresponding VS pools
+
+The applications are configured and exposed as follows, using different AS3 configurations for demo purposes of how AS3 is a perfect match for declarative application exposure using BIG-IP ATC
+
+| Application | Tenant | Pool | Profile | Exposure URL |
+|---|---|---|---|---|
+| NginxWebServerOne | Team_Nginx | NginxWebServerOnePool | Service_HTTP |  http://<EIP_BIG-IP_VIP1>:8080 |
+| NginxWebServerTwo | Team_Nginx | NginxWebServerTwoPool | Service_HTTPS + WAF | https://<EIP_BIG-IP_VIP1>:8081 |
+| BrokenWebServer | Team_Broken | BrokenWebServerPool | Service_HTTPS | https://<EIP_BIG-IP_VIP2>:8080 |
 
 ## Prerequisites
 

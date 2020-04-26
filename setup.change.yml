@@ -31,6 +31,7 @@ webservers:
     vs_port: 8080
     tenant: Team_Nginx
     application: NginxWebServerOne
+    pool: NginxWebServerOnePool
     autodiscovery_tag: nginx_one
     as3_template: http
     private_ip_index: 1
@@ -40,6 +41,7 @@ webservers:
     vs_port: 8081
     tenant: Team_Nginx
     application: NginxWebServerTwo
+    pool: NginxWebServerTwoPool
     autodiscovery_tag: nginx_two
     as3_template: waf
     private_ip_index: 1
@@ -49,6 +51,7 @@ webservers:
     vs_port: 8080
     tenant: Team_Broken
     application: BrokenWebServer
+    pool: BrokenWebServerPool
     autodiscovery_tag: broken
     as3_template: ssl
     private_ip_index: 2
