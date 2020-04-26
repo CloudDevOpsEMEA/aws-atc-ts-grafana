@@ -71,6 +71,8 @@ Ansible related targets include
  - **configure_grafana:** configure Graphite as a datasource and import the dashboard
  - **info:** print information of your setup (IP address, DNS names) and generate a bash based load script
 
+Helper targets include
+
  - **install_galaxy_modules:** install the two F5 Networks provided Ansible Galaxy modules used in this demo: 
    - `f5devcentral.atc_deploy` to perform DO/AS3/TS actions
    - `f5networks.f5_modules` to wait for BIG-IP to be ready after the terraform spin-up
