@@ -6,7 +6,7 @@ This repository is a demonstation on how to use an F5 Networks BIG-IP in combina
 
 The following setup is used 
 
-![AWS Demo Setup Topology](./imgs/aws-atc-ts-grafana-aws.jpg)
+![AWS Demo Setup Topology](./imgs/aws-atc-ts-grafana-aws.png)
 
 For the sake of simplicity, we have chosen to deploy BIG-IP in a 1NIC configuration, inside one subnet only. In production environment, you might want to opt for a 2NIC or a 3NIC deploy to seperate public, private and management traffic
 
