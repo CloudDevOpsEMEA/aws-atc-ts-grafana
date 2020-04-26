@@ -94,7 +94,7 @@ During the several stages of the demo, the `output` folder is being used to stor
 
 ## Results
 
-TODO (screenshots of the results and intermediate steps)
+For a step by step guide, including commands, screenshots and results, refer to this [walkthrough](./walkthrough.md).
 
 ## Extra Information
 
@@ -115,3 +115,5 @@ The source code (and public feature request tracking) of the F5 Automation Tool 
 ## Note
 
 This repository is purely used for demo and educational purposes and not meant for production environments at all
+
+All contributions or remarks are higly appreciated. Pull request FTW :)
