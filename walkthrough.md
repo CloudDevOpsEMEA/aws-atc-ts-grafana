@@ -586,7 +586,7 @@ The dashboard uses the following variables to provide zoom down filters
 The following are  set of self describing screenshots of what the dashboard has to offer and what you can do with the TS provided metrics and data
 
 
-![BIG-IP Application Health Status](./imgs/grafana-applhealth.png)
+![BIG-IP Application Health Status](./imgs/grafana-apphealth.png)
 *BIG-IP Application Health Status*
 <br />
 <br />
