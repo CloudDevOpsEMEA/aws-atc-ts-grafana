@@ -565,6 +565,7 @@ A JSON extract of such an event in more details
 Go to the Grafana UI and check of the graphite data source and BIG-IP TS sample dashboard is available and correctly configured
 
 ![Grafana Data Source](./imgs/grafana-datasource.png)
+<br />
 *Grafana Data Source*
 <br />
 <br />
