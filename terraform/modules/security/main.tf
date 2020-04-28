@@ -140,7 +140,7 @@ module "grafana_sg" {
 # Create a security group for Graphite/StatsD dashboard
 #
 module "graphite_statsd_sg" {
-  source = "github.com/boeboe/terraform-aws-security-group//modules/graphite-statsd?ref=v3.7.0.2"
+  source = "terraform-aws-modules/security-group/aws//modules/graphite-statsd"
 
   name        = format("%s-graphite-statsd-sg-%s", var.owner, var.random_id)
   description = "Security group for Graphite and StatsD"

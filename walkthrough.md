@@ -356,6 +356,8 @@ The ATC JSON blobs that have been send to BIG-IP for DO/AS3/TS are available, as
 
 ## Grafana / Graphite / StatsD
 
+### BIG-IP configuration
+
 If we look at the output of the previous step, we see that the following TS configuration has been applied
 
 ```json
@@ -390,6 +392,8 @@ If we look at the output of the previous step, we see that the following TS conf
 ```
 
 Two consumers are configured: one for Graphite and one for StatsD. Note that for Graphite, BIG-IP will send JSON blobs with telemetry data to the `/events` endpoint. Events can be used in Grafana as annotations to enrich exiting metrics graphs. The StatsD consumer will send the same information in a metric format that is available in Graphite as metrics
+
+### Grafana configuration
 
 In order to configure Grafana, add Graphite as a data source and add the BIG-IP TS example dashboard, run the final step of the configuration through Ansible implemented in the `grafana.yml` playbook
 
@@ -556,3 +560,122 @@ A JSON extract of such an event in more details
 }
 ```
 
+### Dashboard results
+
+Go to the Grafana UI and check of the graphite data source and BIG-IP TS sample dashboard is available and correctly configured
+
+![Grafana Data Source](./imgs/grafana-datasource.png)
+*Grafana Data Source*
+<br />
+<br />
+
+![Grafana BIG-IP TS Sample Dashboard](./imgs/grafana-dashboard.png)
+*Grafana BIG-IP TS Sample Dashboard*
+<br />
+<br />
+
+The dashboard uses the following variables to provide zoom down filters
+
+![Grafana Dashboard Variables](./imgs/grafana-variables.png)
+*Grafana Dashboard Variables*
+<br />
+<br />
+
+### Dashboard summary
+
+The following are  set of self describing screenshots of what the dashboard has to offer and what you can do with the TS provided metrics and data
+
+
+![BIG-IP Application Health Status](./imgs/grafana-applhealth.png)
+*BIG-IP Application Health Status*
+<br />
+<br />
+
+![BIG-IP System Information](./imgs/grafana-system.png)
+*BIG-IP System Information*
+<br />
+<br />
+
+![BIG-IP Virtual Server Information](./imgs/grafana-vss.png)
+*BIG-IP Virtual Server Information*
+<br />
+<br />
+
+![BIG-IP Pool Information](./imgs/grafana-pools.png)
+*BIG-IP Pool Information*
+<br />
+<br />
+
+![BIG-IP Profile Details](./imgs/grafana-profiles.png)
+*BIG-IP Profile Details*
+<br />
+<br />
+
+
+## Traffic generation
+
+Run the final make target ot display all the information of your setup
+
+```console
+# make info
+
+cd /Users/me/Documents/Git/f5/aws-atc-ts-grafana/ansible && ansible-playbook info.yml --extra-vars "setupfile=/Users/me/Documents/Git/f5/aws-atc-ts-grafana/setup.yml outputfolder=/Users/me/Documents/Git/f5/aws-atc-ts-grafana/output generateloadscript=/Users/me/Documents/Git/f5/aws-atc-ts-grafana/output/generate_load.sh" ;
+
+PLAY [Setup Information Gathering Playbook] *********************
+
+TASK [Gathering Facts] *********************
+ok: [ec2-52-48-80-14.eu-west-1.compute.amazonaws.com]
+
+TASK [Set outputfolder if makefile is not used] *********************
+ok: [ec2-52-48-80-14.eu-west-1.compute.amazonaws.com]
+
+TASK [info : Show the Webserver VIP Exposed public URLs] *********************
+ok: [ec2-52-48-80-14.eu-west-1.compute.amazonaws.com]
+
+TASK [info : Process traffic load script jinja template and store result in output folder] *********************
+changed: [ec2-52-48-80-14.eu-west-1.compute.amazonaws.com]
+
+TASK [info : Show BIG-IP and Grafana public admin URL] *********************
+ok: [ec2-52-48-80-14.eu-west-1.compute.amazonaws.com] =>
+  msg: |-
+    BIG-IP : https://ec2-52-48-80-14.eu-west-1.compute.amazonaws.com:8443
+    Grafana : http://ec2-3-249-47-143.eu-west-1.compute.amazonaws.com:3000
+
+PLAY RECAP ****************************************************************************************************************************
+ec2-52-48-80-14.eu-west-1.compute.amazonaws.com : ok=5    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0 
+```
+
+The output folder should now contain a `generate_load.sh` script which uses [siege](https://www.joedog.org), a command line traffic generator, so you can test the dashboards with actual traffic statistics and data. The script contains a self explanatory helper for its usage
+
+```console
+# ls -1 output
+as3_merged.json
+as3_merged_result.json
+aws_ec2.yml
+aws_tfplan.tf
+do_onboard.json
+do_onboard_result.json
+ec2_private_key.pem
+generate_load.sh
+grafana_datasource_graphite.json
+grafana_statsd_dashboard.json
+ts_graphite_statsd.json
+ts_graphite_statsd_result.json
+
+# . ./output/generate_load.sh
+Usage: generate_load.sh <target> <type>
+    <target> should be one of the following:
+        nginx_one : HTTP exposed webserver
+        nginx_two : SSL + WAF exposed webserver
+        broken    : SSL exposed webserver
+        all       : All of the above in parallel
+    <type> only for target broken, but one of the following:
+        normal : traffic generating 200 OK
+        slow   : traffic with slow response
+        errors : traffic with error responses
+        random : traffic with random responses
+```
+
+The target `broken` can now be used to generate 4xx, 5xx and slow responses. The other targets will generate normal 2xx response traffic
+
+This conludes the final part of the walkthrough
