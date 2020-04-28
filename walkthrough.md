@@ -139,21 +139,25 @@ The following files are created as temporary demo artifacts
 Let's see in the AWS Console what actually has been created
 
 ![AWS EC2 Instances](./imgs/aws-ec2-instances.png)
+<br />
 *AWS EC2 Instances*
 <br />
 <br />
 
 ![AWS Security Groups](./imgs/aws-security-groups.png)  
+<br />
 *AWS Security Groups*
 <br />
 <br />
 
 ![AWS Elastic IP Addresses](./imgs/aws-elastic-ips.png)
+<br />
 *AWS Elastic IP Addresses*
 <br />
 <br />
  
 ![BIG-IP Mgmt Interface](./imgs/aws-bigip-mgmt-network-intf.png)
+<br />
 *BIG-IP Mgmt Interface*
 <br />
 <br />
@@ -325,31 +329,37 @@ The ATC JSON blobs that have been send to BIG-IP for DO/AS3/TS are available, as
 
 
 ![Team_Ningx Virtual Servers](./imgs/bigip-team-nginx-vs.png)
+<br />
 *Team_Ningx Virtual Servers*
 <br />
 <br />
 
 ![Team_Nginx Pools](./imgs/bigip-team-nginx-pool.png)
+<br />
 *Team_Nginx Pool*
 <br />
 <br />
 
 ![Team_Nginx Pool Members](./imgs/bigip-team-nginx-member.png)
+<br />
 *Team_Nginx Pool Members*
 <br />
 <br />
 
 ![Team_Broken Virtual Servers](./imgs/bigip-team-broken-vs.png)
+<br />
 *Team_Broken Virtual Servers*
 <br />
 <br />
 
 ![Team_Broken Pools](./imgs/bigip-team-broken-pool.png)
+<br />
 *Team_Broken Pools*
 <br />
 <br />
 
 ![Team_Broken Pool Members](./imgs/bigip-team-broken-member.png)
+<br />
 *Team_Broken Pool Members*
 <br />
 <br />
@@ -466,6 +476,7 @@ Let's look at StatsD first. In order to do so, you can use `netcat` as hinted in
 We can have a visual representation of the StatsD gauges inside Graphite by surfing to the URL hinted above as well
 
 ![Graphite BIG-IP StatsD TS Gauges](./imgs/graphite-bigip-ts-gauges.png)
+<br />
 *Graphite BIG-IP StatsD TS Gauges*
 <br />
 <br />
@@ -474,12 +485,14 @@ We can have a visual representation of the Graphite Events inside Graphite by su
 
 
 ![Graphite BIG-IP Graphite Events](./imgs/graphite-bigip-ts-events.png)
+<br />
 *Graphite BIG-IP Graphite Events*
 <br />
 <br />
 
 
 ![Graphite BIG-IP Graphite Event Details](./imgs/graphite-bigip-ts-eventdetails.png)
+<br />
 *Graphite BIG-IP Graphite Event Details*
 <br />
 <br />
@@ -571,6 +584,7 @@ Go to the Grafana UI and check of the graphite data source and BIG-IP TS sample 
 <br />
 
 ![Grafana BIG-IP TS Sample Dashboard](./imgs/grafana-dashboard.png)
+<br />
 *Grafana BIG-IP TS Sample Dashboard*
 <br />
 <br />
@@ -578,6 +592,7 @@ Go to the Grafana UI and check of the graphite data source and BIG-IP TS sample 
 The dashboard uses the following variables to provide zoom down filters
 
 ![Grafana Dashboard Variables](./imgs/grafana-variables.png)
+<br />
 *Grafana Dashboard Variables*
 <br />
 <br />
@@ -588,11 +603,13 @@ The following are  set of self describing screenshots of what the dashboard has 
 
 
 ![BIG-IP Application Health Status](./imgs/grafana-apphealth.png)
+<br />
 *BIG-IP Application Health Status*
 <br />
 <br />
 
 ![BIG-IP System Information](./imgs/grafana-system.png)
+<br />
 *BIG-IP System Information*
 <br />
 <br />
@@ -603,11 +620,13 @@ The following are  set of self describing screenshots of what the dashboard has 
 <br />
 
 ![BIG-IP Pool Information](./imgs/grafana-pools.png)
+<br />
 *BIG-IP Pool Information*
 <br />
 <br />
 
 ![BIG-IP Profile Details](./imgs/grafana-profiles.png)
+<br />
 *BIG-IP Profile Details*
 <br />
 <br />
