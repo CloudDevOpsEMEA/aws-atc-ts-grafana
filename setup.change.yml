@@ -1,6 +1,6 @@
 ---
 ## Your personal variables
-owner: changeme
+owner: changeme # put no spaces in your custom variables
 
 ## AWS variables
 aws:
